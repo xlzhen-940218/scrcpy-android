@@ -78,4 +78,17 @@
         <item>30</item>
     </integer-array>
 
+    <string name="label_audio_codec">音频编码格式</string>
+    <string-array name="options_audio_codec_keys">
+        <item>RAW PCM (无损超低延迟，最稳定)</item>
+        <item>OPUS (高压缩比)</item>
+        <item>AAC (标准格式)</item>
+    </string-array>
+
+    <string-array name="options_audio_codec_values">
+        <item>raw</item>
+        <item>opus</item>
+        <item>aac</item>
+    </string-array>
+
 </resources>

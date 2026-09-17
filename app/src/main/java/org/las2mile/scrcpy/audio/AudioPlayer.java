@@ -11,6 +11,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AudioPlayer {
@@ -65,22 +66,50 @@ public class AudioPlayer {
 
         audioTrack.play();
         isRunning.set(true);
+    }
 
-        if (codecId == CODEC_OPUS || codecId == CODEC_AAC || codecId == CODEC_FLAC) {
-            String mime = codecId == CODEC_OPUS ? "audio/opus" : (codecId == CODEC_AAC ? "audio/mp4a-latm" : "audio/flac");
+    private void initDecoderWithCsd(byte[] csd0Bytes) {
+        if (audioDecoder != null) {
             try {
-                MediaFormat format = MediaFormat.createAudioFormat(mime, SAMPLE_RATE, 2);
-                audioDecoder = MediaCodec.createDecoderByType(mime);
-                audioDecoder.configure(format, null, null, 0);
-                audioDecoder.start();
-            } catch (Exception e) {
-                Log.e(TAG, "Failed to create audio decoder for " + mime, e);
-                if (audioDecoder != null) {
-                    try {
-                        audioDecoder.release();
-                    } catch (Exception ignored) {}
-                    audioDecoder = null;
-                }
+                audioDecoder.stop();
+                audioDecoder.release();
+            } catch (Exception ignored) {}
+            audioDecoder = null;
+        }
+
+        String mime = (codecId == CODEC_OPUS) ? "audio/opus" : ((codecId == CODEC_AAC) ? "audio/mp4a-latm" : "audio/flac");
+        try {
+            int channels = (csd0Bytes != null && csd0Bytes.length > 9) ? (csd0Bytes[9] & 0xFF) : 2;
+            if (channels <= 0 || channels > 8) channels = 2;
+
+            MediaFormat format = MediaFormat.createAudioFormat(mime, SAMPLE_RATE, channels);
+            format.setByteBuffer("csd-0", ByteBuffer.wrap(csd0Bytes));
+
+            if (codecId == CODEC_OPUS) {
+                // csd-1: codec delay in nanoseconds (default 6500000L = 6.5ms)
+                ByteBuffer csd1 = ByteBuffer.allocate(8).order(ByteOrder.nativeOrder());
+                csd1.putLong(6500000L);
+                csd1.flip();
+                format.setByteBuffer("csd-1", csd1);
+
+                // csd-2: seek preroll in nanoseconds (default 80000000L = 80ms)
+                ByteBuffer csd2 = ByteBuffer.allocate(8).order(ByteOrder.nativeOrder());
+                csd2.putLong(80000000L);
+                csd2.flip();
+                format.setByteBuffer("csd-2", csd2);
+            }
+
+            audioDecoder = MediaCodec.createDecoderByType(mime);
+            audioDecoder.configure(format, null, null, 0);
+            audioDecoder.start();
+            Log.d(TAG, mime + " decoder initialized with CSD successfully! (channels=" + channels + ")");
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to initialize " + mime + " decoder with CSD", e);
+            if (audioDecoder != null) {
+                try {
+                    audioDecoder.release();
+                } catch (Exception ignored) {}
+                audioDecoder = null;
             }
         }
     }
@@ -90,10 +119,20 @@ public class AudioPlayer {
             return;
         }
 
-        if (codecId == CODEC_RAW || audioDecoder == null) {
+        if (codecId == CODEC_RAW) {
             try {
                 audioTrack.write(data, 0, data.length);
             } catch (Exception ignored) {}
+            return;
+        }
+
+        if (isConfig) {
+            initDecoderWithCsd(data);
+            return;
+        }
+
+        if (audioDecoder == null) {
+            // Wait for configuration packet before decoding
             return;
         }
 
@@ -109,8 +148,7 @@ public class AudioPlayer {
                 if (inputBuffer != null) {
                     inputBuffer.clear();
                     inputBuffer.put(data);
-                    int flags = isConfig ? MediaCodec.BUFFER_FLAG_CODEC_CONFIG : 0;
-                    audioDecoder.queueInputBuffer(inputIndex, 0, data.length, pts, flags);
+                    audioDecoder.queueInputBuffer(inputIndex, 0, data.length, pts, 0);
                 }
             }
 
@@ -134,7 +172,13 @@ public class AudioPlayer {
                 outputIndex = audioDecoder.dequeueOutputBuffer(bufferInfo, 0);
             }
         } catch (IllegalStateException e) {
-            // MediaCodec in released or transitioning state during teardown
+            Log.w(TAG, "MediaCodec invalid state, disposing decoder: " + e.getMessage());
+            if (audioDecoder != null) {
+                try {
+                    audioDecoder.release();
+                } catch (Exception ignored) {}
+                audioDecoder = null;
+            }
         } catch (Exception e) {
             Log.e(TAG, "Error decoding audio sample", e);
         }

@@ -57,6 +57,7 @@ public class MainActivity extends Activity implements Scrcpy.ServiceCallbacks, S
     private static final String PREFERENCE_SPINNER_CODEC = "spinner_codec";
     private static final String PREFERENCE_SPINNER_FPS = "spinner_fps";
     private static final String PREFERENCE_SWITCH_AUDIO = "switch_audio";
+    private static final String PREFERENCE_SPINNER_AUDIO_CODEC = "spinner_audio_codec";
     private static final String PREFERENCE_SWITCH_STAY_AWAKE = "switch_stay_awake";
     private static final String PREFERENCE_SWITCH_SCREEN_OFF = "switch_screen_off";
 
@@ -78,6 +79,7 @@ public class MainActivity extends Activity implements Scrcpy.ServiceCallbacks, S
     private String videoCodec = "h264";
     private int maxFps = 0;
     private boolean audioEnabled = false;
+    private String audioCodec = "raw";
     private boolean stayAwake = false;
     private boolean screenOff = false;
 
@@ -198,7 +200,7 @@ public class MainActivity extends Activity implements Scrcpy.ServiceCallbacks, S
             getAttributes();
             if (!serverAdr.isEmpty()) {
                 int res = sendCommands.SendAdbCommands(context, fileBase64, serverAdr, 7007, videoBitrate,
-                        Math.max(screenHeight, screenWidth), maxFps, videoCodec, audioEnabled, "opus", !no_control, stayAwake);
+                        Math.max(screenHeight, screenWidth), maxFps, videoCodec, audioEnabled, audioCodec, !no_control, stayAwake);
                 if (res == 0) {
                     start_screen_copy_magic();
                 } else {
@@ -336,6 +338,7 @@ public class MainActivity extends Activity implements Scrcpy.ServiceCallbacks, S
         setSpinner(R.array.options_bitrate_keys, R.id.spinner_video_bitrate, PREFERENCE_SPINNER_BITRATE);
         setSpinner(R.array.options_codec_keys, R.id.spinner_video_codec, PREFERENCE_SPINNER_CODEC);
         setSpinner(R.array.options_fps_keys, R.id.spinner_max_fps, PREFERENCE_SPINNER_FPS);
+        setSpinner(R.array.options_audio_codec_keys, R.id.spinner_audio_codec, PREFERENCE_SPINNER_AUDIO_CODEC);
 
         if (aSwitch0.isChecked()) {
             aSwitch1.setVisibility(View.GONE);
@@ -470,6 +473,11 @@ public class MainActivity extends Activity implements Scrcpy.ServiceCallbacks, S
 
         videoCodec = videoCodecSpinner.getSelectedItemPosition() == 1 ? "h265" : "h264";
         maxFps = getResources().getIntArray(R.array.options_fps_values)[maxFpsSpinner.getSelectedItemPosition()];
+
+        final Spinner audioCodecSpinner = findViewById(R.id.spinner_audio_codec);
+        if (audioCodecSpinner != null) {
+            audioCodec = getResources().getStringArray(R.array.options_audio_codec_values)[audioCodecSpinner.getSelectedItemPosition()];
+        }
     }
 
     private void swapDimensions() {
