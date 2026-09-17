@@ -126,6 +126,19 @@ app/build/outputs/apk/debug/app-debug.apk
 
 ---
 
+### 🙏 鸣谢与开源致谢
+
+本项目离不开以下优秀的开源项目、库及社区贡献者的启发与支持：
+
+- **[Genymobile/scrcpy](https://github.com/Genymobile/scrcpy)**：由 Romain Vimont 及 Genymobile 团队打造的官方屏幕镜像核心，本项目底层协议与服务端均基于官方 v4.1 构建。
+- **[huage2580/scrcpy-android](https://github.com/huage2580/scrcpy-android)**：Android 端投屏客户端的早期探索者与上游基础项目。
+- **[com.tananaev:adblib](https://github.com/tananaev/adblib)**：轻量级 Java ADB 协议通信库，用于经典 ADB Socket 建立与数据流转发。
+- **[com.github.MuntashirAkon:libadb-android](https://github.com/MuntashirAkon/libadb-android)**：现代 Android ADB 客户端实现，支持 Android 11+ TLS 无线配对与免 Root 调试。
+- **[Google Conscrypt](https://github.com/google/conscrypt)** & **[Bouncy Castle](https://www.bouncycastle.org/)**：为 Android 11+ TLS 密钥协商与安全连接提供底层加密保障。
+- **[Google Material Components](https://github.com/material-components/material-components-android)**：提供现代化 Material Design 3 风格组件与交互支持。
+
+---
+
 ## 🇬🇧 English
 
 ### 🌟 Overview
@@ -221,6 +234,19 @@ Output APK will be located at:
 ```
 app/build/outputs/apk/debug/app-debug.apk
 ```
+
+---
+
+### 🙏 Acknowledgements & Credits
+
+This project is made possible thanks to the following outstanding open-source projects, libraries, and authors:
+
+- **[Genymobile/scrcpy](https://github.com/Genymobile/scrcpy)**: The official high-performance screen mirroring solution created by Romain Vimont and Genymobile team. The core protocol and server backend of this project are powered by official scrcpy v4.1.
+- **[huage2580/scrcpy-android](https://github.com/huage2580/scrcpy-android)**: Upstream project and early pioneer of scrcpy client on Android.
+- **[com.tananaev:adblib](https://github.com/tananaev/adblib)**: Lightweight Java ADB protocol library for classic TCP/IP ADB connection and socket streams.
+- **[com.github.MuntashirAkon:libadb-android](https://github.com/MuntashirAkon/libadb-android)**: Modern Android ADB library powering native Android 11+ TLS wireless debugging and pairing.
+- **[Google Conscrypt](https://github.com/google/conscrypt)** & **[Bouncy Castle](https://www.bouncycastle.org/)**: Cryptographic security providers for modern TLS key exchange and encryption.
+- **[Google Material Components](https://github.com/material-components/material-components-android)**: Modern UI widgets and Material Design 3 styling.
 
 ---
 
