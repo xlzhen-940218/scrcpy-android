@@ -158,4 +158,29 @@
         <item>aac</item>
     </string-array>
 
+    <!-- Connection & Runtime error strings -->
+    <string name="msg_device_disconnected">设备已断开连接</string>
+    <string name="msg_grant_overlay_permission">请授予悬浮窗权限</string>
+    <string name="msg_grant_notification_permission">请授予通知权限以保持悬浮窗前台运行</string>
+    <string name="msg_grant_background_permission">请允许后台运行与忽略电池优化以防服务中断</string>
+    <string name="pair_err_fill_all">请填写完整信息</string>
+    <string name="pair_err_port_format">端口格式错误</string>
+    <string name="err_execution_exception">执行异常: %s</string>
+    <string name="err_deploy_timeout">连接或部署服务超时 (30秒)</string>
+    <string name="err_not_paired">设备未配对！请点击【无线配对 (Android 11+)】输入被控端 6 位配对码完成配对。</string>
+    <string name="err_connection_refused">目标端口 %1$s:%2$d 连接被拒绝。若为 Android 11+ 无线调试请先点击【无线配对】并核对连接端口；若为传统模式请执行 \'adb tcpip %2$d\'</string>
+    <string name="err_cannot_connect">无法连接至 %1$s:%2$d: %3$s</string>
+    <string name="err_deploy_failed">部署服务失败: %s</string>
+
+    <!-- USB error strings -->
+    <string name="usb_err_no_device">未检测到 USB 设备</string>
+    <string name="usb_err_no_adb_mode">该设备未开启 USB 调试模式或不支持 ADB 接口</string>
+    <string name="usb_err_no_endpoints">未找到 ADB Bulk 端点</string>
+    <string name="usb_err_open_failed">无法打开 USB 设备连接</string>
+    <string name="usb_err_claim_failed">无法独占 ADB 接口</string>
+    <string name="usb_err_bridge_start">启动 USB ADB 代理失败: %s</string>
+    <string name="usb_unknown_device">未知设备</string>
+    <string name="usb_device_format">USB 设备 (%1$d:%2$d)</string>
+    <string name="usb_err_permission_denied">未授予 USB 权限，无法连接</string>
+
 </resources>

@@ -1,89 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:background="@color/white"
+    android:id="@+id/root_layout"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_floating_window"
+    android:orientation="vertical">
+
+    <!-- Draggable Header -->
     <LinearLayout
         android:id="@+id/header"
-        android:padding="2dp"
-        android:gravity="center_vertical"
-        android:background="@color/white"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="34dp"
+        android:background="@drawable/bg_floating_header"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="10dp"
+        android:paddingEnd="6dp">
+
         <TextView
-            android:text="scrcpy-lite"
-            android:textSize="14sp"
+            android:id="@+id/tv_title"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="#E0E0E0"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
         <Space
-            android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="0dp"/>
-        <ImageView
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Quick rotate remote device -->
+        <TextView
+            android:id="@+id/iv_rotate"
+            android:layout_width="28dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/rotate_button"
+            android:textColor="#80CBC4"
+            android:textSize="15sp" />
+
+        <!-- Minimize / collapse video -->
+        <TextView
             android:id="@+id/iv_mini"
-            android:src="@drawable/minis"
-            android:layout_width="24dp"
-            android:layout_height="18dp"/>
-        <View
-            android:layout_width="8dp"
-            android:layout_height="0dp"/>
-        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="—"
+            android:textColor="#B0BEC5"
+            android:textSize="13sp" />
+
+        <!-- Close floating window -->
+        <TextView
             android:id="@+id/iv_close"
-            android:src="@drawable/close"
-            android:layout_width="24dp"
-            android:layout_height="18dp"/>
+            android:layout_width="28dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="✕"
+            android:textColor="#EF5350"
+            android:textSize="13sp" />
     </LinearLayout>
+
+    <!-- Video & Surface Container -->
     <FrameLayout
         android:id="@+id/container"
-        android:minHeight="200dp"
-        android:background="@color/black"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="#000000">
+
         <SurfaceView
             android:id="@+id/surface"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-        <TextView
-            android:id="@+id/hint"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:text="链接中...30秒没反应估计就挂了\n\n注意手机提示配对的弹窗"
+            android:layout_height="match_parent" />
+
+        <LinearLayout
+            android:id="@+id/hint_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:minHeight="180dp"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <ProgressBar
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:indeterminate="true" />
+
+            <TextView
+                android:id="@+id/hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="@string/msg_connecting"
+                android:textColor="#B0BEC5"
+                android:textSize="12sp" />
+        </LinearLayout>
     </FrameLayout>
+
+    <!-- Action Bar & Resize Handle -->
     <LinearLayout
         android:id="@+id/actionbar"
-        android:background="@color/white"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="36dp"
+        android:background="@drawable/bg_floating_actionbar"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
         <TextView
             android:id="@+id/action_back"
-            android:gravity="center"
-            android:text="&lt;"
-            android:textSize="18sp"
-            android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"/>
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/back_button"
+            android:textColor="#E0E0E0"
+            android:textSize="15sp" />
+
         <TextView
             android:id="@+id/action_home"
-            android:gravity="center"
-            android:text="o"
-            android:textSize="18sp"
-            android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"/>
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/home_button"
+            android:textColor="#E0E0E0"
+            android:textSize="15sp" />
+
         <TextView
             android:id="@+id/action_menu"
-            android:gravity="center"
-            android:text="="
-            android:textSize="18sp"
-            android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/appswitch_button"
+            android:textColor="#E0E0E0"
+            android:textSize="15sp" />
 
+        <!-- Drag handle to resize window -->
+        <TextView
+            android:id="@+id/iv_resize"
+            android:layout_width="32dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingEnd="4dp"
+            android:text="⤡"
+            android:textColor="#80CBC4"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
 </LinearLayout>

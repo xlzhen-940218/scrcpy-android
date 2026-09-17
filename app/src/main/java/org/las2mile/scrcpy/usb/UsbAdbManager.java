@@ -14,6 +14,8 @@ import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.util.Log;
 
+import org.las2mile.scrcpy.R;
+
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -112,7 +114,7 @@ public class UsbAdbManager {
 
     public void connect(UsbDevice device) {
         if (device == null) {
-            if (listener != null) listener.onError("没有找到 USB 设备");
+            if (listener != null) listener.onError(context.getString(R.string.usb_err_no_device));
             return;
         }
 
@@ -134,7 +136,7 @@ public class UsbAdbManager {
 
         UsbInterface adbInterface = findAdbInterface(device);
         if (adbInterface == null) {
-            if (listener != null) listener.onError("该设备未开启 USB 调试模式或不支持 ADB 接口");
+            if (listener != null) listener.onError(context.getString(R.string.usb_err_no_adb_mode));
             return;
         }
 
@@ -152,19 +154,19 @@ public class UsbAdbManager {
         }
 
         if (epIn == null || epOut == null) {
-            if (listener != null) listener.onError("未找到 ADB Bulk 端点");
+            if (listener != null) listener.onError(context.getString(R.string.usb_err_no_endpoints));
             return;
         }
 
         UsbDeviceConnection conn = usbManager.openDevice(device);
         if (conn == null) {
-            if (listener != null) listener.onError("无法打开 USB 设备连接");
+            if (listener != null) listener.onError(context.getString(R.string.usb_err_open_failed));
             return;
         }
 
         if (!conn.claimInterface(adbInterface, true)) {
             conn.close();
-            if (listener != null) listener.onError("无法独占 ADB 接口");
+            if (listener != null) listener.onError(context.getString(R.string.usb_err_claim_failed));
             return;
         }
 
@@ -179,7 +181,7 @@ public class UsbAdbManager {
         } catch (IOException e) {
             conn.releaseInterface(adbInterface);
             conn.close();
-            if (listener != null) listener.onError("启动 USB ADB 代理失败: " + e.getMessage());
+            if (listener != null) listener.onError(context.getString(R.string.usb_err_bridge_start, e.getMessage()));
         }
     }
 
@@ -208,7 +210,7 @@ public class UsbAdbManager {
     }
 
     public String getDeviceDisplayName(UsbDevice device) {
-        if (device == null) return "未知设备";
+        if (device == null) return context.getString(R.string.usb_unknown_device);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             String prod = device.getProductName();
             String mfg = device.getManufacturerName();
@@ -219,7 +221,7 @@ public class UsbAdbManager {
                 return prod;
             }
         }
-        return "USB 设备 (" + device.getVendorId() + ":" + device.getProductId() + ")";
+        return context.getString(R.string.usb_device_format, device.getVendorId(), device.getProductId());
     }
 
     private final BroadcastReceiver usbReceiver = new BroadcastReceiver() {
@@ -245,7 +247,7 @@ public class UsbAdbManager {
                 if (granted && device != null) {
                     openAdbDevice(device);
                 } else {
-                    if (listener != null) listener.onError("未授予 USB 权限，无法连接");
+                    if (listener != null) listener.onError(context.getString(R.string.usb_err_permission_denied));
                 }
             }
         }

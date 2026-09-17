@@ -129,13 +129,20 @@ public class Scrcpy extends Service {
     }
 
     public void StopService() {
-        isRunning.set(false);
+        boolean wasRunning = isRunning.getAndSet(false);
         closeSockets();
         if (videoDecoder != null) {
             videoDecoder.stop();
         }
         if (audioPlayer != null) {
             audioPlayer.stop();
+        }
+        if (wasRunning && serviceCallbacks != null) {
+            mainHandler.post(() -> {
+                if (serviceCallbacks != null) {
+                    serviceCallbacks.onDisconnected();
+                }
+            });
         }
         stopSelf();
     }
@@ -274,6 +281,7 @@ public class Scrcpy extends Service {
 
         if (!socket_status || !isRunning.get()) {
             socket_status = false;
+            StopService();
             return;
         }
 
@@ -459,6 +467,7 @@ public class Scrcpy extends Service {
 
     public interface ServiceCallbacks {
         void loadNewRotation();
+        void onDisconnected();
     }
 
     public class MyServiceBinder extends Binder {

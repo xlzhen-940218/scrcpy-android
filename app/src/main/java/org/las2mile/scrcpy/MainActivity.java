@@ -3,13 +3,16 @@ package org.las2mile.scrcpy;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
@@ -460,11 +463,38 @@ public class MainActivity extends Activity {
         if (addr == null) return;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-            Toast.makeText(this, "请授予悬浮窗权限", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.msg_grant_overlay_permission, Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     Uri.parse("package:" + getPackageName()));
             startActivity(intent);
             return;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, R.string.msg_grant_notification_permission, Toast.LENGTH_SHORT).show();
+                requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 102);
+                return;
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            if (pm != null && !pm.isIgnoringBatteryOptimizations(getPackageName())) {
+                Toast.makeText(this, R.string.msg_grant_background_permission, Toast.LENGTH_LONG).show();
+                try {
+                    Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                    intent.setData(Uri.parse("package:" + getPackageName()));
+                    startActivity(intent);
+                    return;
+                } catch (Exception e) {
+                    try {
+                        Intent intent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+                        startActivity(intent);
+                        return;
+                    } catch (Exception ignored) {}
+                }
+            }
         }
 
         final String  fAddr       = addr;
@@ -506,6 +536,18 @@ public class MainActivity extends Activity {
         }, "AdbFloatThread").start();
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 102) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                onStartFloat();
+            } else {
+                Toast.makeText(this, R.string.msg_grant_notification_permission, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     // ────────────────────────────────────────────────────────────────────────
     // Wireless Pairing dialog
     // ────────────────────────────────────────────────────────────────────────
@@ -542,7 +584,7 @@ public class MainActivity extends Activity {
             String code = etCode.getText() != null ? etCode.getText().toString().trim() : "";
 
             if (host.isEmpty() || portStr.isEmpty() || code.isEmpty()) {
-                tvStatus.setText("请填写完整信息");
+                tvStatus.setText(R.string.pair_err_fill_all);
                 tvStatus.setVisibility(View.VISIBLE);
                 return;
             }
@@ -551,7 +593,7 @@ public class MainActivity extends Activity {
             try {
                 port = Integer.parseInt(portStr);
             } catch (NumberFormatException e) {
-                tvStatus.setText("端口格式错误");
+                tvStatus.setText(R.string.pair_err_port_format);
                 tvStatus.setVisibility(View.VISIBLE);
                 return;
             }

@@ -147,7 +147,7 @@ public class SendCommands {
                 Log.e(TAG, "adbWrite unexpected exception", e);
                 status = 2;
                 if (lastError == null) {
-                    lastError = "执行异常: " + e.getMessage();
+                    lastError = (context != null) ? context.getString(R.string.err_execution_exception, e.getMessage()) : ("Execution exception: " + e.getMessage());
                 }
             }
         });
@@ -165,7 +165,7 @@ public class SendCommands {
         if (count == 300) {
             status = 2;
             if (lastError == null) {
-                lastError = "连接或部署服务超时 (30秒)";
+                lastError = (context != null) ? context.getString(R.string.err_deploy_timeout) : "Connection or server deployment timed out (30s)";
             }
         }
         return status;
@@ -523,7 +523,7 @@ public class SendCommands {
                 Log.d(TAG, "TLS ADB session established with " + targetHost + ":" + targetAdbPort);
             } catch (io.github.muntashirakon.adb.AdbPairingRequiredException e) {
                 status = 2;
-                lastError = "设备未配对！请点击【无线配对 (Android 11+)】输入被控端 6 位配对码完成配对。";
+                lastError = (context != null) ? context.getString(R.string.err_not_paired) : "Device not paired! Please pair first.";
                 return;
             } catch (Exception e) {
                 Log.w(TAG, "TLS connection failed (" + e.getMessage() + "), trying legacy ADB...", e);
@@ -542,7 +542,7 @@ public class SendCommands {
                 Log.d(TAG, "Legacy ADB session established with " + targetHost + ":" + targetAdbPort);
             } catch (ConnectException e) {
                 status = 2;
-                lastError = "目标端口 " + targetHost + ":" + targetAdbPort + " 连接被拒绝。若为 Android 11+ 无线调试请先点击【无线配对】并核对连接端口；若为传统模式请执行 'adb tcpip " + targetAdbPort + "'";
+                lastError = (context != null) ? context.getString(R.string.err_connection_refused, targetHost, targetAdbPort) : ("Connection to " + targetHost + ":" + targetAdbPort + " refused.");
                 return;
             } catch (Exception e) {
                 // If legacy also failed and target was 5555, try modern TLS as last resort
@@ -557,16 +557,16 @@ public class SendCommands {
                         session = new ModernSession(modernConn);
                     } catch (io.github.muntashirakon.adb.AdbPairingRequiredException pe) {
                         status = 2;
-                        lastError = "设备未配对！请点击【无线配对 (Android 11+)】输入被控端 6 位配对码完成配对。";
+                        lastError = (context != null) ? context.getString(R.string.err_not_paired) : "Device not paired! Please pair first.";
                         return;
                     } catch (Exception te) {
                         status = 2;
-                        lastError = "无法连接至 " + targetHost + ":" + targetAdbPort + ": " + te.getMessage();
+                        lastError = (context != null) ? context.getString(R.string.err_cannot_connect, targetHost, targetAdbPort, te.getMessage()) : ("Cannot connect to " + targetHost + ":" + targetAdbPort + ": " + te.getMessage());
                         return;
                     }
                 } else {
                     status = 2;
-                    lastError = "无法连接至 " + targetHost + ":" + targetAdbPort + ": " + e.getMessage();
+                    lastError = (context != null) ? context.getString(R.string.err_cannot_connect, targetHost, targetAdbPort, e.getMessage()) : ("Cannot connect to " + targetHost + ":" + targetAdbPort + ": " + e.getMessage());
                     return;
                 }
             }
@@ -584,7 +584,7 @@ public class SendCommands {
             } catch (Exception e) {
                 Log.e(TAG, "Deploying server failed", e);
                 status = 2;
-                lastError = "部署服务失败: " + e.getMessage();
+                lastError = (context != null) ? context.getString(R.string.err_deploy_failed, e.getMessage()) : ("Failed to deploy server: " + e.getMessage());
                 try {
                     session.close();
                 } catch (Exception ignored) {}

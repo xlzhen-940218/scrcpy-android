@@ -2,15 +2,18 @@ package org.las2mile.scrcpy;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -201,7 +204,25 @@ public class ScreenMirrorActivity extends Activity
                 orientationEventListener.enable();
             }
         }
+
+        // Register USB detach listener to exit when USB cable is disconnected
+        IntentFilter usbFilter = new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(usbDetachReceiver, usbFilter, Context.RECEIVER_EXPORTED);
+        } else {
+            registerReceiver(usbDetachReceiver, usbFilter);
+        }
     }
+
+    private final BroadcastReceiver usbDetachReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(intent.getAction())) {
+                Log.d(TAG, "USB device detached");
+                onDisconnected();
+            }
+        }
+    };
 
     private android.view.OrientationEventListener orientationEventListener;
     private Boolean lastPhysicalLandscape = null;
@@ -253,6 +274,9 @@ public class ScreenMirrorActivity extends Activity
             orientationEventListener = null;
         }
         if (sensorManager != null) sensorManager.unregisterListener(this);
+        try {
+            unregisterReceiver(usbDetachReceiver);
+        } catch (Exception ignored) {}
         stopScrcpyService();
     }
 
@@ -309,6 +333,17 @@ public class ScreenMirrorActivity extends Activity
         if (containerLayout != null) {
             containerLayout.post(this::adjustSurfaceLayout);
         }
+    }
+
+    @Override
+    public void onDisconnected() {
+        runOnUiThread(() -> {
+            if (!isFinishing() && !isDestroyed()) {
+                Toast.makeText(ScreenMirrorActivity.this, R.string.msg_device_disconnected, Toast.LENGTH_SHORT).show();
+                stopScrcpyService();
+                finish();
+            }
+        });
     }
 
     // ────────────────────────────────────────────────────────────────────────

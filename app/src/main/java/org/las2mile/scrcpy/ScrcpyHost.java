@@ -178,6 +178,10 @@ public class ScrcpyHost implements Scrcpy.ServiceCallbacks {
         }
     }
 
+    @Override
+    public void onDisconnected() {
+    }
+
     public void destroy() {
         if (serviceBound) {
             if (scrcpy != null) {

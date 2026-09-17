@@ -157,4 +157,29 @@
         <item>aac</item>
     </string-array>
 
+    <!-- Connection & Runtime error strings -->
+    <string name="msg_device_disconnected">Device disconnected</string>
+    <string name="msg_grant_overlay_permission">Please grant floating window (overlay) permission</string>
+    <string name="msg_grant_notification_permission">Please grant notification permission to keep floating window running</string>
+    <string name="msg_grant_background_permission">Please allow background running and ignore battery optimization</string>
+    <string name="pair_err_fill_all">Please fill in all fields</string>
+    <string name="pair_err_port_format">Invalid port format</string>
+    <string name="err_execution_exception">Execution error: %s</string>
+    <string name="err_deploy_timeout">Connection or service deployment timed out (30s)</string>
+    <string name="err_not_paired">Device not paired! Please tap [Wireless Pairing (Android 11+)] and enter the 6-digit code.</string>
+    <string name="err_connection_refused">Connection to %1$s:%2$d refused. For Android 11+ wireless debugging, please pair first; for legacy mode, run \'adb tcpip %2$d\'</string>
+    <string name="err_cannot_connect">Cannot connect to %1$s:%2$d: %3$s</string>
+    <string name="err_deploy_failed">Failed to deploy server: %s</string>
+
+    <!-- USB error strings -->
+    <string name="usb_err_no_device">No USB device detected</string>
+    <string name="usb_err_no_adb_mode">Device USB debugging not enabled or no ADB interface found</string>
+    <string name="usb_err_no_endpoints">ADB Bulk endpoints not found</string>
+    <string name="usb_err_open_failed">Unable to open USB device connection</string>
+    <string name="usb_err_claim_failed">Unable to claim ADB interface</string>
+    <string name="usb_err_bridge_start">Failed to start USB ADB bridge: %s</string>
+    <string name="usb_unknown_device">Unknown Device</string>
+    <string name="usb_device_format">USB Device (%1$d:%2$d)</string>
+    <string name="usb_err_permission_denied">USB permission denied, cannot connect</string>
+
 </resources>
