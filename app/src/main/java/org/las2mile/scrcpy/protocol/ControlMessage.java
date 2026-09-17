@@ -20,9 +20,13 @@ public final class ControlMessage {
     public static final int TYPE_SET_DISPLAY_POWER = 10;
     public static final int TYPE_ROTATE_DEVICE = 11;
     public static final int TYPE_OPEN_HARD_KEYBOARD_SETTINGS = 12;
-    public static final int TYPE_RESET_VIDEO = 13;
+    public static final int TYPE_RESET_VIDEO = 17;
 
     private ControlMessage() {
+    }
+
+    public static byte[] createResetVideo() {
+        return new byte[]{(byte) TYPE_RESET_VIDEO};
     }
 
     public static byte[] createInjectKeycode(int action, int keycode, int repeat, int metaState) {

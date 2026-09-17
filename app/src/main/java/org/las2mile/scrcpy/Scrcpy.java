@@ -69,9 +69,25 @@ public class Scrcpy extends Service {
         this.screenWidth = newWidth;
         this.screenHeight = newHeight;
         this.surface = newSurface;
-        if (videoDecoder != null) {
+        if (videoDecoder != null && surface != null && surface.isValid()) {
             videoDecoder.configure(surface, screenWidth, screenHeight);
         }
+    }
+
+    public void setSurface(Surface newSurface) {
+        this.surface = newSurface;
+        if (videoDecoder != null) {
+            int w = remote_dev_resolution[0] > 0 ? remote_dev_resolution[0] : screenWidth;
+            int h = remote_dev_resolution[1] > 0 ? remote_dev_resolution[1] : screenHeight;
+            if (newSurface != null && newSurface.isValid()) {
+                videoDecoder.setSurface(newSurface, w, h);
+                resetVideo();
+            }
+        }
+    }
+
+    public void resetVideo() {
+        sendControlMessage(ControlMessage.createResetVideo());
     }
 
     public void start(Surface surface, String serverAdr, int screenHeight, int screenWidth) {
@@ -219,17 +235,20 @@ public class Scrcpy extends Service {
                 Log.d(TAG, "Connecting to server at " + serverAdr + ":" + serverPort);
 
                 // 1. Connect video socket
-                videoSocket = new Socket(serverAdr, serverPort);
+                videoSocket = new Socket();
+                videoSocket.connect(new java.net.InetSocketAddress(serverAdr, serverPort), 3000);
                 videoSocket.setTcpNoDelay(true);
 
                 // 2. Connect audio socket if enabled
                 if (audioEnabled) {
-                    audioSocket = new Socket(serverAdr, serverPort);
+                    audioSocket = new Socket();
+                    audioSocket.connect(new java.net.InetSocketAddress(serverAdr, serverPort), 3000);
                     audioSocket.setTcpNoDelay(true);
                 }
 
                 // 3. Connect control socket
-                controlSocket = new Socket(serverAdr, serverPort);
+                controlSocket = new Socket();
+                controlSocket.connect(new java.net.InetSocketAddress(serverAdr, serverPort), 3000);
                 controlSocket.setTcpNoDelay(true);
 
                 Log.d(TAG, "All sockets connected successfully");
@@ -259,9 +278,11 @@ public class Scrcpy extends Service {
             new Thread(this::audioThread, "Scrcpy-Audio").start();
         }
 
-        // Video processing on current thread
-        videoThread();
+        // Run video on its own dedicated thread so audio + video run truly in parallel
+        // (previously videoThread() blocked connectionThread, starving audio startup)
+        new Thread(this::videoThread, "Scrcpy-Video").start();
     }
+
 
     private void videoThread() {
         try {
@@ -294,11 +315,11 @@ public class Scrcpy extends Service {
                     remote_dev_resolution[0] = width;
                     remote_dev_resolution[1] = height;
 
-                    if (surface != null) {
+                    if (surface != null && surface.isValid()) {
                         videoDecoder.configure(surface, width, height);
                     }
 
-                    if (rotationChanged && serviceCallbacks != null) {
+                    if (serviceCallbacks != null) {
                         mainHandler.post(() -> {
                             if (serviceCallbacks != null) {
                                 serviceCallbacks.loadNewRotation();

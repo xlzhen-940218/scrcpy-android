@@ -198,19 +198,45 @@ public class MainActivity extends Activity implements Scrcpy.ServiceCallbacks, S
 
         startButton.setOnClickListener(v -> {
             getAttributes();
-            if (!serverAdr.isEmpty()) {
-                int res = sendCommands.SendAdbCommands(context, fileBase64, serverAdr, 7007, videoBitrate,
-                        Math.max(screenHeight, screenWidth), maxFps, videoCodec, audioEnabled, audioCodec, !no_control, stayAwake);
-                if (res == 0) {
-                    start_screen_copy_magic();
-                } else {
-                    String err = sendCommands.getLastError();
-                    String msg = (err != null && !err.isEmpty()) ? err : "Network OR ADB connection failed. Check if port 5555 is enabled.";
-                    Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-                }
-            } else {
+            if (serverAdr.isEmpty()) {
                 Toast.makeText(context, "Server Address Empty", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            // Show progress dialog and run ADB commands on background thread to avoid ANR
+            AlertDialog connectingDialog = new AlertDialog.Builder(this)
+                    .setTitle("正在连接...")
+                    .setMessage("正在部署 scrcpy 服务，请稍候")
+                    .setCancelable(false)
+                    .create();
+            connectingDialog.show();
+            startButton.setEnabled(false);
+
+            final String capturedServerAdr = serverAdr;
+            final int capturedBitrate = videoBitrate;
+            final int capturedMaxFps = maxFps;
+            final String capturedVideoCodec = videoCodec;
+            final boolean capturedAudio = audioEnabled;
+            final String capturedAudioCodec = audioCodec;
+            final boolean capturedControl = !no_control;
+            final boolean capturedStayAwake = stayAwake;
+
+            new Thread(() -> {
+                int res = sendCommands.SendAdbCommands(context, fileBase64, capturedServerAdr, 7007, capturedBitrate,
+                        Math.max(screenHeight, screenWidth), capturedMaxFps, capturedVideoCodec,
+                        capturedAudio, capturedAudioCodec, capturedControl, capturedStayAwake);
+                runOnUiThread(() -> {
+                    connectingDialog.dismiss();
+                    startButton.setEnabled(true);
+                    if (res == 0) {
+                        start_screen_copy_magic();
+                    } else {
+                        String err = sendCommands.getLastError();
+                        String msg = (err != null && !err.isEmpty()) ? err : "Network OR ADB connection failed. Check if port 5555 is enabled.";
+                        Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }, "AdbConnectThread").start();
         });
 
         floatButton.setOnClickListener(v -> {

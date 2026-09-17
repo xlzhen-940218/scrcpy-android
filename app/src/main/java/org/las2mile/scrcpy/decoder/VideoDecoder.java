@@ -8,6 +8,7 @@ import android.view.Surface;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VideoDecoder {
@@ -35,6 +36,12 @@ public class VideoDecoder {
     public void configure(Surface surface, int width, int height) {
         if (mWorker != null) {
             mWorker.configure(surface, width, height, mimeType);
+        }
+    }
+
+    public void setSurface(Surface surface, int width, int height) {
+        if (mWorker != null) {
+            mWorker.setSurface(surface, width, height, mimeType);
         }
     }
 
@@ -70,12 +77,39 @@ public class VideoDecoder {
 
     private class Worker extends Thread {
         private final AtomicBoolean mIsRunning = new AtomicBoolean(false);
+        private byte[] cachedCsd;
 
         private void setRunning(boolean isRunning) {
             mIsRunning.set(isRunning);
         }
 
+        private synchronized void setSurface(Surface surface, int width, int height, String mime) {
+            if (surface == null || !surface.isValid()) {
+                Log.w(TAG, "setSurface: surface is null or invalid");
+                return;
+            }
+
+            if (mCodec != null && mIsConfigured.get()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    try {
+                        mCodec.setOutputSurface(surface);
+                        Log.d(TAG, "mCodec.setOutputSurface succeeded dynamically!");
+                        return;
+                    } catch (Exception e) {
+                        Log.w(TAG, "setOutputSurface failed, will re-configure", e);
+                    }
+                }
+            }
+
+            configure(surface, width, height, mime);
+        }
+
         private synchronized void configure(Surface surface, int width, int height, String mime) {
+            if (surface == null || !surface.isValid()) {
+                Log.w(TAG, "Cannot configure VideoDecoder: surface is null or invalid");
+                return;
+            }
+
             if (mIsConfigured.get() && mCodec != null) {
                 mIsConfigured.set(false);
                 try {
@@ -88,23 +122,38 @@ public class VideoDecoder {
 
             try {
                 MediaFormat format = MediaFormat.createVideoFormat(mime, width, height);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    format.setInteger(MediaFormat.KEY_LOW_LATENCY, 1);
+                }
+                if (cachedCsd != null) {
+                    format.setByteBuffer("csd-0", ByteBuffer.wrap(cachedCsd));
+                }
                 mCodec = MediaCodec.createDecoderByType(mime);
                 mCodec.configure(format, surface, null, 0);
                 mCodec.start();
                 mIsConfigured.set(true);
                 Log.d(TAG, "VideoDecoder configured for " + mime + " (" + width + "x" + height + ")");
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to create video decoder for " + mime, e);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to create/configure video decoder for " + mime, e);
+                mCodec = null;
+                mIsConfigured.set(false);
             }
         }
 
         public synchronized void decodeSample(byte[] data, int offset, int size, long presentationTimeUs, int flags) {
+            if ((flags & 2) != 0) { // BUFFER_FLAG_CODEC_CONFIG
+                cachedCsd = Arrays.copyOfRange(data, offset, offset + size);
+            }
+
             if (!mIsConfigured.get() || !mIsRunning.get() || mCodec == null) {
                 return;
             }
 
             try {
                 int index = mCodec.dequeueInputBuffer(10000);
+                if (index < 0) {
+                    index = mCodec.dequeueInputBuffer(20000);
+                }
                 if (index >= 0) {
                     ByteBuffer buffer;
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {

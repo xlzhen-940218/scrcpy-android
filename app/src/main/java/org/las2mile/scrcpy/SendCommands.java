@@ -11,13 +11,13 @@ import com.tananaev.adblib.AdbStream;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 
 public class SendCommands {
     private static final String TAG = "SendCommands";
@@ -55,20 +55,52 @@ public class SendCommands {
         };
     }
 
-    private AdbCrypto setupCrypto() throws NoSuchAlgorithmException, IOException {
-        AdbCrypto c = null;
-        try {
-            c = AdbCrypto.loadAdbKeyPair(getBase64Impl(), context.getFileStreamPath("priv.key"), context.getFileStreamPath("pub.key"));
-        } catch (IOException | InvalidKeySpecException | NoSuchAlgorithmException | NullPointerException e) {
-            c = null;
+    private AdbCrypto setupCrypto() throws Exception {
+        // Always reuse the same key pair managed by AdbKeyManager to avoid
+        // overwriting priv.key and causing CERTIFICATE_AND_PRIVATE_KEY_MISMATCH.
+        org.las2mile.scrcpy.adb.AdbKeyManager.AdbKeyPair kp =
+                org.las2mile.scrcpy.adb.AdbKeyManager.getKeyPair(context);
+        java.security.PrivateKey privKey = kp.getPrivateKey();
+
+        // Reconstruct the RSA public key from the private key (CRT parameters)
+        java.security.interfaces.RSAPrivateCrtKey privCrt =
+                (java.security.interfaces.RSAPrivateCrtKey) privKey;
+        java.security.spec.RSAPublicKeySpec pubSpec =
+                new java.security.spec.RSAPublicKeySpec(privCrt.getModulus(), privCrt.getPublicExponent());
+        java.security.KeyFactory kf = java.security.KeyFactory.getInstance("RSA");
+        java.security.PublicKey pubKey = kf.generatePublic(pubSpec);
+
+        // Build an AdbCrypto wrapper around the shared key pair
+        return AdbCrypto.loadAdbKeyPair(getBase64Impl(),
+                context.getFileStreamPath("priv.key"),
+                context.getFileStreamPath("pub.key"));
+    }
+
+    private AdbCrypto ensureLegacyCrypto() throws Exception {
+        // Write priv.key/pub.key from AdbKeyManager's canonical key pair so
+        // legacy adblib can load them – without ever overwriting with a new key.
+        File privFile = context.getFileStreamPath("priv.key");
+        File pubFile  = context.getFileStreamPath("pub.key");
+
+        org.las2mile.scrcpy.adb.AdbKeyManager.AdbKeyPair kp =
+                org.las2mile.scrcpy.adb.AdbKeyManager.getKeyPair(context);
+
+        // Always (re)write so legacy adblib gets the exact same key as TLS pairing
+        try (java.io.FileOutputStream fos = new java.io.FileOutputStream(privFile)) {
+            fos.write(kp.getPrivateKey().getEncoded());
+        }
+        java.security.interfaces.RSAPrivateCrtKey privCrt =
+                (java.security.interfaces.RSAPrivateCrtKey) kp.getPrivateKey();
+        java.security.spec.RSAPublicKeySpec pubSpec =
+                new java.security.spec.RSAPublicKeySpec(privCrt.getModulus(), privCrt.getPublicExponent());
+        java.security.KeyFactory kf = java.security.KeyFactory.getInstance("RSA");
+        java.security.PublicKey pubKey = kf.generatePublic(pubSpec);
+        String pubBase64 = android.util.Base64.encodeToString(pubKey.getEncoded(), android.util.Base64.NO_WRAP);
+        try (java.io.FileOutputStream fos = new java.io.FileOutputStream(pubFile)) {
+            fos.write((pubBase64 + " scrcpy-android\0").getBytes(java.nio.charset.StandardCharsets.UTF_8));
         }
 
-        if (c == null) {
-            c = AdbCrypto.generateAdbKeyPair(getBase64Impl());
-            c.saveAdbKeyPair(context.getFileStreamPath("priv.key"), context.getFileStreamPath("pub.key"));
-        }
-
-        return c;
+        return AdbCrypto.loadAdbKeyPair(getBase64Impl(), privFile, pubFile);
     }
 
     public int SendAdbCommands(Context context, final byte[] fileBytes, final String ip, int port, int bitrate, int size,
@@ -350,7 +382,7 @@ public class SendCommands {
         if (session == null && status == 1) {
             try {
                 Log.d(TAG, "Attempting Legacy ADB connection to " + targetHost + ":" + targetAdbPort);
-                AdbCrypto crypto = setupCrypto();
+                AdbCrypto crypto = ensureLegacyCrypto();
                 Socket sock = new Socket(targetHost, targetAdbPort);
                 com.tananaev.adblib.AdbConnection adb = com.tananaev.adblib.AdbConnection.create(sock, crypto);
                 adb.connect();
@@ -377,7 +409,7 @@ public class SendCommands {
                         return;
                     } catch (Exception te) {
                         status = 2;
-                        lastError = "无法连接至 " + targetHost + ":" + targetAdbPort + ": " + e.getMessage();
+                        lastError = "无法连接至 " + targetHost + ":" + targetAdbPort + ": " + te.getMessage();
                         return;
                     }
                 } else {

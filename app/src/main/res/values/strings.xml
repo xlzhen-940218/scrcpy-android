@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">scrcpy-lite</string>
+    <string name="app_name">scrcpy-4.1</string>
 
     <string name="label_server_ip">Remote Device IP address</string>
     <string name="label_video_resolution">Resolution</string>
