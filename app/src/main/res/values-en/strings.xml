@@ -1,0 +1,142 @@
+<resources>
+    <string name="app_name">scrcpy 4.1</string>
+
+    <!-- Connection section -->
+    <string name="section_connection">Connection</string>
+    <string name="label_server_ip">Device IP &amp; Port</string>
+    <string name="hint_server_ip">e.g. 192.168.0.73 or 192.168.0.73:5555</string>
+    <string name="hint_adb_instruction">Android 11+ Wireless: tap Pair Device below\nLegacy: run adb tcpip 5555 on target device</string>
+    <string name="btn_adb_pair">Wireless Pair (Android 11+)</string>
+    <string name="btn_start_fullscreen">Fullscreen Mirror</string>
+    <string name="btn_start_float">Floating Window</string>
+
+    <!-- Video section -->
+    <string name="section_video">Video</string>
+    <string name="label_video_resolution">Resolution</string>
+    <string name="label_video_bitrate">Bitrate</string>
+    <string name="label_codec">Video Codec</string>
+    <string name="label_fps">Max FPS</string>
+
+    <!-- Audio section -->
+    <string name="section_audio">Audio</string>
+    <string name="label_audio_codec">Audio Codec</string>
+    <string name="switch_audio">Forward Audio (play device audio here)</string>
+
+    <!-- Advanced section -->
+    <string name="section_advanced">Advanced</string>
+    <string name="switch_stay_awake">Stay Awake (prevent device from sleeping)</string>
+    <string name="switch_screen_off">Screen Off Mirror (turn off device screen after connect)</string>
+    <string name="switch0">View Only (disable touch and input on remote device)</string>
+    <string name="switch1">Show Nav Bar (enable if device has no on-screen nav bar)</string>
+
+    <!-- Nav buttons -->
+    <string name="back_button">◁</string>
+    <string name="home_button">○</string>
+    <string name="appswitch_button">□</string>
+
+    <!-- Pairing dialog -->
+    <string name="pair_dialog_title">Wireless Debug Pairing (Android 11+)</string>
+    <string name="pair_dialog_instruction">On the target device, go to Developer Options → Wireless Debugging → Pair device with pairing code. Enter the pairing port and 6-digit code shown:</string>
+    <string name="pair_dialog_host_label">Target Device IP</string>
+    <string name="pair_dialog_host_hint">e.g. 192.168.0.73</string>
+    <string name="pair_dialog_port_label">Pairing Port</string>
+    <string name="pair_dialog_port_hint">e.g. 39123</string>
+    <string name="pair_dialog_code_label">6-digit Pairing Code</string>
+    <string name="pair_dialog_code_hint">e.g. 123456</string>
+    <string name="pair_dialog_btn_pair">Start Pairing</string>
+    <string name="pair_dialog_btn_cancel">Cancel</string>
+    <string name="pair_success">Paired! Enter the wireless debug connection port and tap Fullscreen Mirror.</string>
+
+    <!-- Messages -->
+    <string name="msg_connecting">Connecting, please wait…</string>
+    <string name="msg_deploying_server">Deploying scrcpy server</string>
+    <string name="msg_connection_timeout">Connection timed out</string>
+    <string name="msg_address_empty">Please enter a device address</string>
+    <string name="msg_press_again_exit">Press back again to exit</string>
+    <string name="msg_connection_failed">Connection failed. Check ADB is enabled.</string>
+
+    <!-- Labels -->
+    <string name="label_x">×</string>
+    <string name="action_start">Start</string>
+    <string name="label_server_ip_short">IP Address</string>
+
+    <!-- Resolution options -->
+    <string-array name="options_resolution_keys">
+        <item>Native Resolution (unlimited)</item>
+        <item>1920 × 1080</item>
+        <item>1600 × 900</item>
+        <item>1280 × 720</item>
+        <item>1200 × 540</item>
+        <item>960 × 540</item>
+        <item>800 × 450</item>
+        <item>640 × 360</item>
+    </string-array>
+
+    <string-array name="options_resolution_values">
+        <item>0x0</item>
+        <item>1920x1080</item>
+        <item>1600x900</item>
+        <item>1280x720</item>
+        <item>1200x540</item>
+        <item>960x540</item>
+        <item>800x450</item>
+        <item>640x360</item>
+    </string-array>
+
+    <string-array name="options_bitrate_keys">
+        <item>16 Mbps</item>
+        <item>8 Mbps</item>
+        <item>6 Mbps</item>
+        <item>4 Mbps</item>
+        <item>2 Mbps</item>
+        <item>1 Mbps</item>
+    </string-array>
+
+    <integer-array name="options_bitrate_values">
+        <item>16000000</item>
+        <item>8000000</item>
+        <item>6144000</item>
+        <item>4096000</item>
+        <item>2048000</item>
+        <item>1024000</item>
+    </integer-array>
+
+    <string-array name="options_codec_keys">
+        <item>H.264 (Best Compatibility)</item>
+        <item>H.265 / HEVC (High Compression)</item>
+        <item>AV1 (Ultra Efficient)</item>
+    </string-array>
+
+    <string-array name="options_codec_values">
+        <item>h264</item>
+        <item>h265</item>
+        <item>av1</item>
+    </string-array>
+
+    <string-array name="options_fps_keys">
+        <item>Unlimited (default)</item>
+        <item>60 FPS</item>
+        <item>30 FPS</item>
+        <item>15 FPS</item>
+    </string-array>
+
+    <integer-array name="options_fps_values">
+        <item>0</item>
+        <item>60</item>
+        <item>30</item>
+        <item>15</item>
+    </integer-array>
+
+    <string-array name="options_audio_codec_keys">
+        <item>RAW PCM (lossless, lowest latency)</item>
+        <item>OPUS (high compression)</item>
+        <item>AAC (standard)</item>
+    </string-array>
+
+    <string-array name="options_audio_codec_values">
+        <item>raw</item>
+        <item>opus</item>
+        <item>aac</item>
+    </string-array>
+
+</resources>

@@ -1,179 +1,359 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface">
 
-    <LinearLayout
+    <!-- Top App Bar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        android:padding="16dp"
-        android:orientation="vertical"
-        tools:context=".MainActivity">
+        android:fitsSystemWindows="true"
+        app:liftOnScroll="true">
 
-        <TextView
-            android:padding="10dp"
-            android:textSize="14sp"
-            android:text="要使用scrcpy-android (scrcpy 4.1)，请在被控手机开启网络ADB：\nadb tcpip 5555"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_launcher_foreground"
+            app:navigationIconTint="?attr/colorPrimary"
+            app:title="@string/app_name"
+            app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="10dp"
-            android:text="手机IP与端口 (例如 192.168.0.73 或 192.168.0.73:5555)"
-            android:textAppearance="@android:style/TextAppearance" />
+    </com.google.android.material.appbar.AppBarLayout>
 
-        <EditText
-            android:id="@+id/editText_server_host"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLength="45"
-            android:inputType="textUri"
-            android:hint="IP 或 IP:端口"
-            android:minHeight="48dp"
-            android:importantForAutofill="no" />
-
-        <Button
-            android:id="@+id/button_adb_pair"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/btn_adb_pair"
-            android:textAllCaps="false"
-            style="?android:attr/buttonStyleSmall" />
-
-        <TextView
-            android:textSize="15sp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="传输分辨率"
-            android:textAppearance="@android:style/TextAppearance" />
-
-        <Spinner
-            android:id="@+id/spinner_video_resolution"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:entries="@array/options_resolution_values"
-            android:minHeight="48dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="带宽码率"
-            android:textAppearance="@android:style/TextAppearance" />
-
-        <Spinner
-            android:id="@+id/spinner_video_bitrate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:entries="@array/options_bitrate_keys"
-            android:minHeight="48dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/label_codec"
-            android:textAppearance="@android:style/TextAppearance" />
-
-        <Spinner
-            android:id="@+id/spinner_video_codec"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:entries="@array/options_codec_keys"
-            android:minHeight="48dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/label_fps"
-            android:textAppearance="@android:style/TextAppearance" />
-
-        <Spinner
-            android:id="@+id/spinner_max_fps"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:entries="@array/options_fps_keys"
-            android:minHeight="48dp" />
-
-        <Switch
-            android:id="@+id/switch_audio"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="10dp"
-            android:text="@string/switch_audio"
-            android:textSize="14sp" />
-
-        <Spinner
-            android:id="@+id/spinner_audio_codec"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:entries="@array/options_audio_codec_keys"
-            android:minHeight="48dp" />
-
-        <Switch
-            android:id="@+id/switch_stay_awake"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="4dp"
-            android:text="@string/switch_stay_awake"
-            android:textSize="14sp" />
-
-        <Switch
-            android:id="@+id/switch_screen_off"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="4dp"
-            android:text="@string/switch_screen_off"
-            android:textSize="14sp" />
-
-        <Switch
-            android:id="@+id/switch0"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="4dp"
-            android:text="@string/switch0"
-            android:textSize="14sp" />
-
-        <Switch
-            android:id="@+id/switch1"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="4dp"
-            android:text="@string/switch1"
-            android:textSize="14sp" />
+    <!-- Scrollable content -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <Button
+            <!-- ═══ CONNECTION CARD ═══ -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardElevation="0dp"
+                app:cardCornerRadius="16dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorOutlineVariant"
+                app:cardBackgroundColor="?attr/colorSurface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/section_connection"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginBottom="12dp" />
+
+                    <!-- IP Address Input -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_server_host"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/label_server_ip"
+                        app:helperText="@string/hint_adb_instruction"
+                        app:helperTextEnabled="true"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editText_server_host"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textUri"
+                            android:maxLength="45"
+                            android:hint="@string/hint_server_ip"
+                            android:importantForAutofill="no"
+                            android:imeOptions="actionDone"
+                            android:nextFocusDown="@+id/button_adb_pair" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Pair Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button_adb_pair"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/btn_adb_pair"
+                        android:textAllCaps="false"
+                        android:focusable="true"
+                        android:nextFocusDown="@+id/spinner_video_resolution"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        app:icon="@android:drawable/ic_menu_manage" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ═══ VIDEO CARD ═══ -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardElevation="0dp"
+                app:cardCornerRadius="16dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorOutlineVariant"
+                app:cardBackgroundColor="?attr/colorSurface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/section_video"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginBottom="8dp" />
+
+                    <!-- Resolution -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/label_video_resolution"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_marginBottom="8dp">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/spinner_video_resolution"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"
+                            android:focusable="true"
+                            android:minHeight="48dp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Row: Bitrate + FPS -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="8dp">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="6dp"
+                            android:hint="@string/label_video_bitrate"
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/spinner_video_bitrate"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="none"
+                                android:focusable="true"
+                                android:minHeight="48dp" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="6dp"
+                            android:hint="@string/label_fps"
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/spinner_max_fps"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="none"
+                                android:focusable="true"
+                                android:minHeight="48dp" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
+                    <!-- Codec -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/label_codec"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/spinner_video_codec"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"
+                            android:focusable="true"
+                            android:minHeight="48dp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ═══ AUDIO CARD ═══ -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardElevation="0dp"
+                app:cardCornerRadius="16dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorOutlineVariant"
+                app:cardBackgroundColor="?attr/colorSurface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/section_audio"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginBottom="4dp" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switch_audio"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:text="@string/switch_audio"
+                        android:focusable="true"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_audio_codec"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:hint="@string/label_audio_codec"
+                        android:visibility="gone"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/spinner_audio_codec"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"
+                            android:focusable="true"
+                            android:minHeight="48dp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ═══ ADVANCED CARD ═══ -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardElevation="0dp"
+                app:cardCornerRadius="16dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorOutlineVariant"
+                app:cardBackgroundColor="?attr/colorSurface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/section_advanced"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginBottom="4dp" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switch_stay_awake"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:text="@string/switch_stay_awake"
+                        android:focusable="true"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switch_screen_off"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:text="@string/switch_screen_off"
+                        android:focusable="true"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switch0"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:text="@string/switch0"
+                        android:focusable="true"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switch1"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:text="@string/switch1"
+                        android:focusable="true"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ═══ ACTION BUTTONS ═══ -->
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_start"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="全屏模式"
-                android:textSize="18sp" />
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="12dp"
+                android:text="@string/btn_start_fullscreen"
+                android:textSize="16sp"
+                android:textAllCaps="false"
+                android:focusable="true"
+                android:nextFocusUp="@id/switch1"
+                style="@style/Widget.Material3.Button"
+                app:icon="@android:drawable/ic_media_play"
+                app:iconGravity="textStart" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_start_float"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="12dp"
-                android:text="悬浮窗模式"
-                android:textSize="18sp" />
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="32dp"
+                android:text="@string/btn_start_float"
+                android:textAllCaps="false"
+                android:focusable="true"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                app:icon="@android:drawable/ic_menu_crop"
+                app:iconGravity="textStart" />
+
         </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-    </LinearLayout>
-
-</ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

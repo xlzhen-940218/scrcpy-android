@@ -1,62 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black">
 
+    <!-- SurfaceView: sized by ConstraintSet ratio, centered in available space -->
     <SurfaceView
         android:id="@+id/decoder_surface"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/nav_button_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintDimensionRatio="H,16:9" />
 
+
+    <!-- Navigation button bar: anchored to bottom, hidden by default -->
     <LinearLayout
         android:id="@+id/nav_button_bar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_gravity="bottom"
-        android:background="#80000000"
+        android:background="#CC000000"
+        android:orientation="horizontal"
         android:visibility="gone"
-        tools:visibility="visible"
-        android:orientation="horizontal">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/back_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackground"
             android:text="@string/back_button"
-            android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="18sp"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:textSize="20sp"
+            android:focusable="true"
+            android:nextFocusRight="@+id/home_button"
+            style="@style/Widget.Material3.Button.TextButton" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/home_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackground"
             android:text="@string/home_button"
-            android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="20sp"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:textSize="22sp"
+            android:focusable="true"
+            android:nextFocusLeft="@+id/back_button"
+            android:nextFocusRight="@+id/appswitch_button"
+            style="@style/Widget.Material3.Button.TextButton" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/appswitch_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackground"
             android:text="@string/appswitch_button"
             android:textColor="@android:color/white"
             android:textSize="22sp"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:focusable="true"
+            android:nextFocusLeft="@+id/home_button"
+            style="@style/Widget.Material3.Button.TextButton" />
 
     </LinearLayout>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,46 +1,91 @@
 <resources>
-    <string name="app_name">scrcpy-4.1</string>
+    <string name="app_name">scrcpy 4.1</string>
 
-    <string name="label_server_ip">Remote Device IP address</string>
-    <string name="label_video_resolution">Resolution</string>
-    <string name="label_video_bitrate">Bitrate</string>
-    <string name="label_x">x</string>
-    <string name="action_start">Start</string>
-    <string name="appswitch_button">=</string>
-    <string name="home_button">o</string>
-    <string name="back_button">v</string>
-    <string name="switch0">No Control  (check this if remote device control is not required)</string>
-    <string name="switch1">Nav Bar  (check this if remote device does not have on-screen nav bar)</string>
-    <string name="label_codec">视频编码格式</string>
-    <string name="label_fps">最大帧率 (Max FPS)</string>
-    <string name="switch_audio">音频转发 (捕获手机声音并在当前设备播放)</string>
-    <string name="switch_stay_awake">保持唤醒 (防止手机休眠)</string>
-    <string name="switch_screen_off">熄屏镜像 (连接后关闭手机屏幕以省电)</string>
-
+    <!-- Connection section -->
+    <string name="section_connection">连接</string>
+    <string name="label_server_ip">被控设备 IP 与端口</string>
+    <string name="hint_server_ip">例如 192.168.0.73 或 192.168.0.73:5555</string>
+    <string name="hint_adb_instruction">Android 11+ 无线调试：点击下方【无线配对】\n传统模式：在被控手机运行 adb tcpip 5555</string>
     <string name="btn_adb_pair">无线配对 (Android 11+)</string>
-    <string name="pair_dialog_title">无线调试配对 (Android 11+)</string>
-    <string name="pair_dialog_instruction">请在被控手机进入【开发者选项】→【无线调试】→ 点击【使用配对码配对设备】，在此输入显示的配对端口与 6 位配对码：</string>
+    <string name="btn_start_fullscreen">全屏投屏</string>
+    <string name="btn_start_float">悬浮窗投屏</string>
+
+    <!-- Video section -->
+    <string name="section_video">视频</string>
+    <string name="label_video_resolution">传输分辨率</string>
+    <string name="label_video_bitrate">视频码率</string>
+    <string name="label_codec">视频编码</string>
+    <string name="label_fps">最大帧率</string>
+
+    <!-- Audio section -->
+    <string name="section_audio">音频</string>
+    <string name="label_audio_codec">音频编码</string>
+    <string name="switch_audio">音频转发（将被控设备声音转发到此设备）</string>
+
+    <!-- Advanced section -->
+    <string name="section_advanced">高级选项</string>
+    <string name="switch_stay_awake">保持唤醒（防止被控设备休眠）</string>
+    <string name="switch_screen_off">熄屏镜像（连接后关闭被控设备屏幕）</string>
+    <string name="switch0">仅观看（禁用对被控设备的触控和输入）</string>
+    <string name="switch1">显示导航栏（被控设备无虚拟导航栏时开启）</string>
+
+    <!-- Nav buttons in mirroring screen -->
+    <string name="back_button">◁</string>
+    <string name="home_button">○</string>
+    <string name="appswitch_button">□</string>
+
+    <!-- Pairing dialog -->
+    <string name="pair_dialog_title">无线调试配对（Android 11+）</string>
+    <string name="pair_dialog_instruction">在被控手机进入【开发者选项】→【无线调试】→【使用配对码配对设备】，输入显示的配对端口与 6 位配对码：</string>
     <string name="pair_dialog_host_label">被控设备 IP 地址</string>
-    <string name="pair_dialog_host_hint">例如 192.168.251.233</string>
-    <string name="pair_dialog_port_label">配对端口 (Pairing Port)</string>
+    <string name="pair_dialog_host_hint">例如 192.168.0.73</string>
+    <string name="pair_dialog_port_label">配对端口</string>
     <string name="pair_dialog_port_hint">例如 39123</string>
-    <string name="pair_dialog_code_label">6 位配对码 (Pairing Code)</string>
+    <string name="pair_dialog_code_label">6 位配对码</string>
     <string name="pair_dialog_code_hint">例如 123456</string>
     <string name="pair_dialog_btn_pair">开始配对</string>
     <string name="pair_dialog_btn_cancel">取消</string>
-    <string name="pair_success">配对成功！请在主界面输入无线调试连接端口并点击 Start 即可投屏</string>
+    <string name="pair_success">配对成功！请在主界面输入无线调试连接端口后点击【全屏投屏】</string>
 
+    <!-- Messages -->
+    <string name="msg_connecting">正在连接，请稍候…</string>
+    <string name="msg_deploying_server">正在部署 scrcpy 服务</string>
+    <string name="msg_connection_timeout">连接超时</string>
+    <string name="msg_address_empty">请输入被控设备地址</string>
+    <string name="msg_press_again_exit">再次按返回键退出</string>
+    <string name="msg_connection_failed">连接失败，请检查 ADB 是否已开启</string>
+
+    <!-- Labels -->
+    <string name="label_x">×</string>
+    <string name="action_start">开始</string>
+    <string name="label_server_ip_short">IP 地址</string>
+
+    <!-- Resolution options -->
+    <string-array name="options_resolution_keys">
+        <item>原始分辨率（不限制）</item>
+        <item>1920 × 1080</item>
+        <item>1600 × 900</item>
+        <item>1280 × 720</item>
+        <item>1200 × 540</item>
+        <item>960 × 540</item>
+        <item>800 × 450</item>
+        <item>640 × 360</item>
+    </string-array>
+
+    <!-- Resolution values: "WxH", use "0x0" for native/unlimited -->
     <string-array name="options_resolution_values">
+        <item>0x0</item>
         <item>1920x1080</item>
-        <item>1600x720</item>
+        <item>1600x900</item>
         <item>1280x720</item>
         <item>1200x540</item>
-        <item>960x720</item>
-        <item>800x448</item>
+        <item>960x540</item>
+        <item>800x450</item>
         <item>640x360</item>
     </string-array>
 
     <string-array name="options_bitrate_keys">
+        <item>16 Mbps</item>
         <item>8 Mbps</item>
         <item>6 Mbps</item>
         <item>4 Mbps</item>
@@ -49,6 +94,7 @@
     </string-array>
 
     <integer-array name="options_bitrate_values">
+        <item>16000000</item>
         <item>8000000</item>
         <item>6144000</item>
         <item>4096000</item>
@@ -57,32 +103,35 @@
     </integer-array>
 
     <string-array name="options_codec_keys">
-        <item>H.264 (兼容性好)</item>
-        <item>H.265 / HEVC (高压缩率)</item>
+        <item>H.264（兼容性最佳）</item>
+        <item>H.265 / HEVC（高压缩率）</item>
+        <item>AV1（超高效率）</item>
     </string-array>
 
     <string-array name="options_codec_values">
         <item>h264</item>
         <item>h265</item>
+        <item>av1</item>
     </string-array>
 
     <string-array name="options_fps_keys">
-        <item>无限制 (默认)</item>
+        <item>无限制（默认）</item>
         <item>60 FPS</item>
         <item>30 FPS</item>
+        <item>15 FPS</item>
     </string-array>
 
     <integer-array name="options_fps_values">
         <item>0</item>
         <item>60</item>
         <item>30</item>
+        <item>15</item>
     </integer-array>
 
-    <string name="label_audio_codec">音频编码格式</string>
     <string-array name="options_audio_codec_keys">
-        <item>RAW PCM (无损超低延迟，最稳定)</item>
-        <item>OPUS (高压缩比)</item>
-        <item>AAC (标准格式)</item>
+        <item>RAW PCM（无损超低延迟，最稳定）</item>
+        <item>OPUS（高压缩比）</item>
+        <item>AAC（标准格式）</item>
     </string-array>
 
     <string-array name="options_audio_codec_values">

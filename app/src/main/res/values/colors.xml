@@ -1,5 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="white">#f5f5f5</color>
+    <!-- Brand / Primary -->
+    <color name="md_primary">#006874</color>
+    <color name="md_on_primary">#FFFFFF</color>
+    <color name="md_primary_container">#97F0FF</color>
+    <color name="md_on_primary_container">#001F24</color>
+
+    <!-- Secondary -->
+    <color name="md_secondary">#4A6267</color>
+    <color name="md_on_secondary">#FFFFFF</color>
+    <color name="md_secondary_container">#CCE7EC</color>
+    <color name="md_on_secondary_container">#051F23</color>
+
+    <!-- Surface -->
+    <color name="md_surface">#F5FAFB</color>
+    <color name="md_on_surface">#171D1E</color>
+    <color name="md_surface_variant">#DBE4E6</color>
+    <color name="md_on_surface_variant">#3F484A</color>
+    <color name="md_surface_container">#E8F2F4</color>
+    <color name="md_surface_container_high">#DCE7E8</color>
+
+    <!-- Background -->
+    <color name="md_background">#F5FAFB</color>
+    <color name="md_on_background">#171D1E</color>
+
+    <!-- Outline -->
+    <color name="md_outline">#6F797B</color>
+    <color name="md_outline_variant">#BFC8CA</color>
+
+    <!-- Error -->
+    <color name="md_error">#BA1A1A</color>
+    <color name="md_on_error">#FFFFFF</color>
+
+    <!-- Legacy -->
+    <color name="white">#F5FAFB</color>
     <color name="black">#000000</color>
 </resources>
