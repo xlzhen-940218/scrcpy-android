@@ -45,6 +45,7 @@ public class ScreenMirrorActivity extends Activity
     public static final String EXTRA_NAV = "nav";
     public static final String EXTRA_NO_CONTROL = "no_control";
     public static final String EXTRA_SCREEN_OFF = "screen_off";
+    public static final String EXTRA_SYNC_ROTATION = "sync_rotation";
 
     private String serverAdr;
     private int serverPort = 7007;
@@ -54,6 +55,7 @@ public class ScreenMirrorActivity extends Activity
     private boolean nav;
     private boolean noControl;
     private boolean screenOff;
+    private boolean syncRotation = true;
 
     private SurfaceView surfaceView;
     private Surface surface;
@@ -152,6 +154,7 @@ public class ScreenMirrorActivity extends Activity
         nav            = i.getBooleanExtra(EXTRA_NAV, false);
         noControl      = i.getBooleanExtra(EXTRA_NO_CONTROL, false);
         screenOff      = i.getBooleanExtra(EXTRA_SCREEN_OFF, false);
+        syncRotation   = i.getBooleanExtra(EXTRA_SYNC_ROTATION, true);
 
         setContentView(R.layout.surface);
         applyFullscreen();
@@ -204,7 +207,15 @@ public class ScreenMirrorActivity extends Activity
     @Override
     public void onConfigurationChanged(android.content.res.Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // ConstraintLayout handles relayout automatically; just re-adjust padding/ratio
+        if (syncRotation && scrcpy != null && remoteDeviceWidth > 0 && remoteDeviceHeight > 0) {
+            boolean currentLandscape = (newConfig.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE);
+            boolean remoteLandscape = (remoteDeviceWidth > remoteDeviceHeight);
+            if (currentLandscape != remoteLandscape) {
+                android.util.Log.d(TAG, "Controlling device orientation changed: currentLandscape="
+                        + currentLandscape + ", remoteLandscape=" + remoteLandscape + ". Syncing remote rotation.");
+                scrcpy.rotateDevice();
+            }
+        }
         if (containerLayout != null) {
             containerLayout.post(this::adjustSurfaceLayout);
         }
@@ -240,7 +251,6 @@ public class ScreenMirrorActivity extends Activity
     // Scrcpy.ServiceCallbacks
     // ────────────────────────────────────────────────────────────────────────
 
-    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     public void loadNewRotation() {
         if (scrcpy == null) return;
@@ -250,11 +260,7 @@ public class ScreenMirrorActivity extends Activity
         remoteDeviceHeight = res[1];
         landscape = (remoteDeviceWidth > remoteDeviceHeight);
 
-        if (landscape) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
+        // Aspect ratio is dynamically applied to SurfaceView by ConstraintSet in adjustSurfaceLayout()
         if (containerLayout != null) {
             containerLayout.post(this::adjustSurfaceLayout);
         }

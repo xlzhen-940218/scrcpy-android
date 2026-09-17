@@ -14,10 +14,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.ConnectException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SendCommands {
     private static final String TAG = "SendCommands";
@@ -176,11 +182,15 @@ public class SendCommands {
         String execute(String cmd) throws Exception;
         void pushFile(byte[] data, String remotePath) throws Exception;
         void startServerProcess(String cmd, ServerOutputCallback callback) throws Exception;
+        void forwardPort(int localPort, int remotePort) throws Exception;
     }
 
     private static class ModernSession implements AdbSession {
         private final io.github.muntashirakon.adb.AdbConnection connection;
         private io.github.muntashirakon.adb.AdbStream serverStream;
+        private ServerSocket forwardServer;
+        private final List<Socket> forwardSockets = new CopyOnWriteArrayList<>();
+        private final List<io.github.muntashirakon.adb.AdbStream> forwardStreams = new CopyOnWriteArrayList<>();
 
         ModernSession(io.github.muntashirakon.adb.AdbConnection connection) {
             this.connection = connection;
@@ -245,11 +255,68 @@ public class SendCommands {
         }
 
         @Override
+        public void forwardPort(int localPort, int remotePort) throws Exception {
+            if (forwardServer != null) {
+                try { forwardServer.close(); } catch (Exception ignored) {}
+            }
+            forwardServer = new ServerSocket(localPort, 10, InetAddress.getByName("127.0.0.1"));
+            new Thread(() -> {
+                while (!forwardServer.isClosed()) {
+                    try {
+                        Socket client = forwardServer.accept();
+                        client.setTcpNoDelay(true);
+                        forwardSockets.add(client);
+                        io.github.muntashirakon.adb.AdbStream stream = connection.open("tcp:" + remotePort);
+                        forwardStreams.add(stream);
+
+                        new Thread(() -> {
+                            try (InputStream in = client.getInputStream();
+                                 OutputStream out = stream.openOutputStream()) {
+                                byte[] buf = new byte[8192];
+                                int r;
+                                while ((r = in.read(buf)) != -1) {
+                                    out.write(buf, 0, r);
+                                    out.flush();
+                                }
+                            } catch (Exception ignored) {}
+                        }).start();
+
+                        new Thread(() -> {
+                            try (InputStream in = stream.openInputStream();
+                                 OutputStream out = client.getOutputStream()) {
+                                byte[] buf = new byte[16384];
+                                int r;
+                                while ((r = in.read(buf)) != -1) {
+                                    out.write(buf, 0, r);
+                                    out.flush();
+                                }
+                            } catch (Exception ignored) {}
+                        }).start();
+                    } catch (Exception e) {
+                        if (forwardServer == null || forwardServer.isClosed()) break;
+                    }
+                }
+            }, "ModernPortForward-" + localPort).start();
+        }
+
+        @Override
         public void close() {
             if (serverStream != null) {
                 try { serverStream.close(); } catch (Exception ignored) {}
                 serverStream = null;
             }
+            if (forwardServer != null) {
+                try { forwardServer.close(); } catch (Exception ignored) {}
+                forwardServer = null;
+            }
+            for (Socket s : forwardSockets) {
+                try { s.close(); } catch (Exception ignored) {}
+            }
+            forwardSockets.clear();
+            for (io.github.muntashirakon.adb.AdbStream s : forwardStreams) {
+                try { s.close(); } catch (Exception ignored) {}
+            }
+            forwardStreams.clear();
             try { connection.close(); } catch (Exception ignored) {}
         }
     }
@@ -331,12 +398,75 @@ public class SendCommands {
             }, "LegacyServerStream").start();
         }
 
+        private ServerSocket forwardServer;
+        private final List<Socket> forwardSockets = new CopyOnWriteArrayList<>();
+        private final List<com.tananaev.adblib.AdbStream> forwardStreams = new CopyOnWriteArrayList<>();
+
+        @Override
+        public void forwardPort(int localPort, int remotePort) throws Exception {
+            if (forwardServer != null) {
+                try { forwardServer.close(); } catch (Exception ignored) {}
+            }
+            forwardServer = new ServerSocket(localPort, 10, InetAddress.getByName("127.0.0.1"));
+            new Thread(() -> {
+                while (!forwardServer.isClosed()) {
+                    try {
+                        Socket client = forwardServer.accept();
+                        client.setTcpNoDelay(true);
+                        forwardSockets.add(client);
+                        com.tananaev.adblib.AdbStream stream = connection.open("tcp:" + remotePort);
+                        forwardStreams.add(stream);
+
+                        new Thread(() -> {
+                            try {
+                                InputStream in = client.getInputStream();
+                                byte[] buf = new byte[8192];
+                                int r;
+                                while ((r = in.read(buf)) != -1 && !stream.isClosed()) {
+                                    byte[] chunk = new byte[r];
+                                    System.arraycopy(buf, 0, chunk, 0, r);
+                                    stream.write(chunk);
+                                }
+                            } catch (Exception ignored) {}
+                        }).start();
+
+                        new Thread(() -> {
+                            try {
+                                OutputStream out = client.getOutputStream();
+                                while (!stream.isClosed() && !client.isClosed()) {
+                                    byte[] data = stream.read();
+                                    if (data != null && data.length > 0) {
+                                        out.write(data);
+                                        out.flush();
+                                    }
+                                }
+                            } catch (Exception ignored) {}
+                        }).start();
+                    } catch (Exception e) {
+                        if (forwardServer == null || forwardServer.isClosed()) break;
+                    }
+                }
+            }, "LegacyPortForward-" + localPort).start();
+        }
+
         @Override
         public void close() {
             if (serverStream != null) {
                 try { serverStream.close(); } catch (Exception ignored) {}
                 serverStream = null;
             }
+            if (forwardServer != null) {
+                try { forwardServer.close(); } catch (Exception ignored) {}
+                forwardServer = null;
+            }
+            for (Socket s : forwardSockets) {
+                try { s.close(); } catch (Exception ignored) {}
+            }
+            forwardSockets.clear();
+            for (com.tananaev.adblib.AdbStream s : forwardStreams) {
+                try { s.close(); } catch (Exception ignored) {}
+            }
+            forwardStreams.clear();
             try { socket.close(); } catch (Exception ignored) {}
         }
     }
@@ -423,6 +553,10 @@ public class SendCommands {
         if (session != null && status == 1) {
             try {
                 deployServer(session, fileData, command);
+                if ("127.0.0.1".equals(targetHost)) {
+                    Log.d(TAG, "Setting up local port forwarding for USB session on port 7007");
+                    session.forwardPort(7007, 7007);
+                }
                 activeSession = session;
                 status = 0;
             } catch (Exception e) {

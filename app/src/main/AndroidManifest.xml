@@ -6,6 +6,9 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW"/>
 
+    <!-- USB Host feature for USB OTG connection -->
+    <uses-feature android:name="android.hardware.usb.host" android:required="false" />
+
     <!-- TV: declare that the app can run without touch -->
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
     <uses-feature android:name="android.software.leanback" android:required="false" />

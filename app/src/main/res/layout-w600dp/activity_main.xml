@@ -70,37 +70,134 @@
                             android:textColor="?attr/colorPrimary"
                             android:layout_marginBottom="12dp" />
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/til_server_host"
+                        <!-- Mode Toggle Group: Wi-Fi vs USB -->
+                        <com.google.android.material.button.MaterialButtonToggleGroup
+                            android:id="@+id/toggle_group_connection_mode"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="@string/label_server_ip"
-                            app:helperText="@string/hint_adb_instruction"
-                            app:helperTextEnabled="true"
-                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+                            android:layout_marginBottom="16dp"
+                            app:singleSelection="true"
+                            app:selectionRequired="true"
+                            app:checkedButton="@+id/btn_mode_wifi">
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/editText_server_host"
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_mode_wifi"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/mode_wifi"
+                                android:textAllCaps="false"
+                                style="@style/Widget.Material3.Button.OutlinedButton" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_mode_usb"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/mode_usb"
+                                android:textAllCaps="false"
+                                style="@style/Widget.Material3.Button.OutlinedButton" />
+
+                        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                        <!-- Wi-Fi Connection Module -->
+                        <LinearLayout
+                            android:id="@+id/layout_wifi_connection"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="visible">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/til_server_host"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:inputType="textUri"
-                                android:maxLength="45"
-                                android:hint="@string/hint_server_ip"
-                                android:importantForAutofill="no"
-                                android:focusable="true" />
+                                android:hint="@string/label_server_ip"
+                                app:helperText="@string/hint_adb_instruction"
+                                app:helperTextEnabled="true"
+                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-                        </com.google.android.material.textfield.TextInputLayout>
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/editText_server_host"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="textUri"
+                                    android:maxLength="45"
+                                    android:hint="@string/hint_server_ip"
+                                    android:importantForAutofill="no"
+                                    android:focusable="true" />
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/button_adb_pair"
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/button_adb_pair"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="@string/btn_adb_pair"
+                                android:textAllCaps="false"
+                                android:focusable="true"
+                                style="@style/Widget.Material3.Button.OutlinedButton"
+                                app:icon="@android:drawable/ic_menu_manage" />
+
+                        </LinearLayout>
+
+                        <!-- USB Connection Module -->
+                        <LinearLayout
+                            android:id="@+id/layout_usb_connection"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="@string/btn_adb_pair"
-                            android:textAllCaps="false"
-                            android:focusable="true"
-                            style="@style/Widget.Material3.Button.OutlinedButton"
-                            app:icon="@android:drawable/ic_menu_manage" />
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                app:cardElevation="0dp"
+                                app:cardCornerRadius="12dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="?attr/colorOutlineVariant"
+                                app:cardBackgroundColor="?attr/colorSurfaceVariant">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <TextView
+                                        android:id="@+id/tv_usb_status"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/usb_status_no_device"
+                                        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                                        android:textColor="?attr/colorOnSurfaceVariant" />
+
+                                    <TextView
+                                        android:id="@+id/tv_usb_hint"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:text="@string/usb_hint"
+                                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                                        android:textColor="?attr/colorOutline" />
+
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/button_usb_connect"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="@string/usb_btn_scan_connect"
+                                android:textAllCaps="false"
+                                android:focusable="true"
+                                style="@style/Widget.Material3.Button.TonalButton"
+                                app:icon="@android:drawable/stat_sys_data_bluetooth" />
+
+                        </LinearLayout>
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -267,6 +364,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="48dp"
                             android:text="@string/switch_audio"
+                            android:checked="true"
                             android:focusable="true"
                             android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
 
@@ -276,7 +374,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:hint="@string/label_audio_codec"
-                            android:visibility="gone"
+                            android:visibility="visible"
                             style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
                             <AutoCompleteTextView
                                 android:id="@+id/spinner_audio_codec"
@@ -313,6 +411,15 @@
                             android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
                             android:textColor="?attr/colorPrimary"
                             android:layout_marginBottom="4dp" />
+
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/switch_sync_rotation"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:text="@string/switch_sync_rotation"
+                            android:checked="true"
+                            android:focusable="true"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
 
                         <com.google.android.material.materialswitch.MaterialSwitch
                             android:id="@+id/switch_stay_awake"

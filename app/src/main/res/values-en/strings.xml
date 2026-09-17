@@ -22,8 +22,25 @@
     <string name="label_audio_codec">Audio Codec</string>
     <string name="switch_audio">Forward Audio (play device audio here)</string>
 
+    <!-- Mode switcher -->
+    <string name="mode_wifi">Wi-Fi Wireless</string>
+    <string name="mode_usb">USB Cable</string>
+
+    <!-- USB section -->
+    <string name="section_usb">USB Connection</string>
+    <string name="usb_status_no_device">No USB device detected</string>
+    <string name="usb_status_detected">Device detected: %s</string>
+    <string name="usb_status_connected">✓ Connected: %s</string>
+    <string name="usb_status_connecting">Connecting via USB…</string>
+    <string name="usb_hint">Connect target phone via OTG cable and enable USB Debugging</string>
+    <string name="usb_btn_scan_connect">Detect &amp; Connect USB</string>
+    <string name="usb_btn_disconnect">Disconnect</string>
+    <string name="usb_perm_requested">Please grant USB and debugging permissions on both devices</string>
+    <string name="usb_not_supported">This device does not support USB Host or ADB interface not found</string>
+
     <!-- Advanced section -->
     <string name="section_advanced">Advanced</string>
+    <string name="switch_sync_rotation">Auto-sync screen rotation (rotate remote on tilt)</string>
     <string name="switch_stay_awake">Stay Awake (prevent device from sleeping)</string>
     <string name="switch_screen_off">Screen Off Mirror (turn off device screen after connect)</string>
     <string name="switch0">View Only (disable touch and input on remote device)</string>

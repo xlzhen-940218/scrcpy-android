@@ -22,8 +22,25 @@
     <string name="label_audio_codec">音频编码</string>
     <string name="switch_audio">音频转发（将被控设备声音转发到此设备）</string>
 
+    <!-- Mode switcher -->
+    <string name="mode_wifi">Wi-Fi 无线连接</string>
+    <string name="mode_usb">USB 数据线连接</string>
+
+    <!-- USB section -->
+    <string name="section_usb">USB 连接</string>
+    <string name="usb_status_no_device">未检测到 USB 设备</string>
+    <string name="usb_status_detected">检测到设备：%s</string>
+    <string name="usb_status_connected">✓ 已连接设备：%s</string>
+    <string name="usb_status_connecting">正在连接 USB 设备…</string>
+    <string name="usb_hint">请使用 OTG 数据线连接受控手机，并在受控手机上开启【USB 调试】</string>
+    <string name="usb_btn_scan_connect">检测并连接 USB 设备</string>
+    <string name="usb_btn_disconnect">断开连接</string>
+    <string name="usb_perm_requested">请在受控设备和本设备上允许 USB 连接及调试权限</string>
+    <string name="usb_not_supported">此设备不支持 USB Host 或未找到 ADB 接口</string>
+
     <!-- Advanced section -->
     <string name="section_advanced">高级选项</string>
+    <string name="switch_sync_rotation">自动同步横竖屏（跟随本设备旋转受控端）</string>
     <string name="switch_stay_awake">保持唤醒（防止被控设备休眠）</string>
     <string name="switch_screen_off">熄屏镜像（连接后关闭被控设备屏幕）</string>
     <string name="switch0">仅观看（禁用对被控设备的触控和输入）</string>

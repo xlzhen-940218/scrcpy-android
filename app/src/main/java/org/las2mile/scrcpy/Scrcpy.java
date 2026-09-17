@@ -171,6 +171,10 @@ public class Scrcpy extends Service {
         sendControlMessage(ControlMessage.createSetClipboard(text, paste));
     }
 
+    public void rotateDevice() {
+        sendControlMessage(ControlMessage.createEmpty(ControlMessage.TYPE_ROTATE_DEVICE));
+    }
+
     public boolean touchevent(MotionEvent touch_event, int displayW, int displayH) {
         if (remote_dev_resolution[0] == 0 || remote_dev_resolution[1] == 0 || displayW <= 0 || displayH <= 0) {
             return false;
