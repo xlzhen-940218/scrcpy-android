@@ -49,7 +49,8 @@ public class UsbAdbBridge implements Closeable {
             return port;
         }
 
-        serverSocket = new ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"));
+        serverSocket = new ServerSocket(0, 10, InetAddress.getByName("127.0.0.1"));
+        serverSocket.setReceiveBufferSize(512 * 1024);
         port = serverSocket.getLocalPort();
         isRunning.set(true);
 
@@ -69,6 +70,8 @@ public class UsbAdbBridge implements Closeable {
             try {
                 Socket clientSocket = serverSocket.accept();
                 clientSocket.setTcpNoDelay(true);
+                clientSocket.setSendBufferSize(512 * 1024);
+                clientSocket.setReceiveBufferSize(512 * 1024);
                 activeTcpSocket = clientSocket;
                 Log.d(TAG, "Accepted TCP connection from ADB client");
 
@@ -109,6 +112,7 @@ public class UsbAdbBridge implements Closeable {
         try {
             InputStream in = socket.getInputStream();
             byte[] header = new byte[24];
+            byte[] payloadBuf = new byte[262144];
 
             while (isRunning.get() && !socket.isClosed()) {
                 int read = readFully(in, header, 0, 24);
@@ -129,7 +133,7 @@ public class UsbAdbBridge implements Closeable {
 
                 // If payload present, read from TCP and transfer to USB
                 if (payloadLength > 0 && payloadLength < (16 * 1024 * 1024)) {
-                    byte[] payload = new byte[payloadLength];
+                    byte[] payload = (payloadLength <= payloadBuf.length) ? payloadBuf : new byte[payloadLength];
                     int payloadRead = readFully(in, payload, 0, payloadLength);
                     if (payloadRead < payloadLength) break;
 
@@ -147,11 +151,12 @@ public class UsbAdbBridge implements Closeable {
 
     /**
      * Reads USB Bulk IN packets and writes them to TCP socket.
+     * Buffer size is 256KB to accept full modern ADB payloads without dropping or truncating.
      */
     private void runUsbToTcp(Socket socket) {
         try {
             OutputStream out = socket.getOutputStream();
-            byte[] buf = new byte[16384];
+            byte[] buf = new byte[262144];
 
             while (isRunning.get() && !socket.isClosed()) {
                 int read = connection.bulkTransfer(endpointIn, buf, buf.length, 1000);

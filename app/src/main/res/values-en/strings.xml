@@ -46,10 +46,11 @@
     <string name="switch0">View Only (disable touch and input on remote device)</string>
     <string name="switch1">Show Nav Bar (enable if device has no on-screen nav bar)</string>
 
-    <!-- Nav buttons -->
+    <!-- Nav buttons in mirroring screen -->
     <string name="back_button">◁</string>
     <string name="home_button">○</string>
     <string name="appswitch_button">□</string>
+    <string name="rotate_button">⟳</string>
 
     <!-- Pairing dialog -->
     <string name="pair_dialog_title">Wireless Debug Pairing (Android 11+)</string>

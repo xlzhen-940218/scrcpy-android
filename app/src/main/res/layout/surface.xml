@@ -68,6 +68,19 @@
             android:textSize="22sp"
             android:focusable="true"
             android:nextFocusLeft="@+id/home_button"
+            android:nextFocusRight="@+id/rotate_button"
+            style="@style/Widget.Material3.Button.TextButton" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/rotate_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/rotate_button"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:focusable="true"
+            android:nextFocusLeft="@+id/appswitch_button"
             style="@style/Widget.Material3.Button.TextButton" />
 
     </LinearLayout>

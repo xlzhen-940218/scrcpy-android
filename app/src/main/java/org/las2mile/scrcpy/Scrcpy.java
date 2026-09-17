@@ -240,18 +240,22 @@ public class Scrcpy extends Service {
 
                 // 1. Connect video socket
                 videoSocket = new Socket();
+                videoSocket.setReceiveBufferSize(1024 * 1024);
+                videoSocket.setSendBufferSize(256 * 1024);
                 videoSocket.connect(new java.net.InetSocketAddress(serverAdr, serverPort), 3000);
                 videoSocket.setTcpNoDelay(true);
 
                 // 2. Connect audio socket if enabled
                 if (audioEnabled) {
                     audioSocket = new Socket();
+                    audioSocket.setReceiveBufferSize(256 * 1024);
                     audioSocket.connect(new java.net.InetSocketAddress(serverAdr, serverPort), 3000);
                     audioSocket.setTcpNoDelay(true);
                 }
 
                 // 3. Connect control socket
                 controlSocket = new Socket();
+                controlSocket.setSendBufferSize(64 * 1024);
                 controlSocket.connect(new java.net.InetSocketAddress(serverAdr, serverPort), 3000);
                 controlSocket.setTcpNoDelay(true);
 

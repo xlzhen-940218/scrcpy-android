@@ -1,6 +1,7 @@
 package org.las2mile.scrcpy;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
 
@@ -259,12 +260,14 @@ public class SendCommands {
             if (forwardServer != null) {
                 try { forwardServer.close(); } catch (Exception ignored) {}
             }
-            forwardServer = new ServerSocket(localPort, 10, InetAddress.getByName("127.0.0.1"));
+            forwardServer = new ServerSocket(localPort, 50, InetAddress.getByName("127.0.0.1"));
             new Thread(() -> {
                 while (!forwardServer.isClosed()) {
                     try {
                         Socket client = forwardServer.accept();
                         client.setTcpNoDelay(true);
+                        client.setSendBufferSize(1024 * 1024);
+                        client.setReceiveBufferSize(1024 * 1024);
                         forwardSockets.add(client);
                         io.github.muntashirakon.adb.AdbStream stream = connection.open("tcp:" + remotePort);
                         forwardStreams.add(stream);
@@ -272,7 +275,7 @@ public class SendCommands {
                         new Thread(() -> {
                             try (InputStream in = client.getInputStream();
                                  OutputStream out = stream.openOutputStream()) {
-                                byte[] buf = new byte[8192];
+                                byte[] buf = new byte[131072];
                                 int r;
                                 while ((r = in.read(buf)) != -1) {
                                     out.write(buf, 0, r);
@@ -284,7 +287,7 @@ public class SendCommands {
                         new Thread(() -> {
                             try (InputStream in = stream.openInputStream();
                                  OutputStream out = client.getOutputStream()) {
-                                byte[] buf = new byte[16384];
+                                byte[] buf = new byte[262144];
                                 int r;
                                 while ((r = in.read(buf)) != -1) {
                                     out.write(buf, 0, r);
@@ -407,12 +410,14 @@ public class SendCommands {
             if (forwardServer != null) {
                 try { forwardServer.close(); } catch (Exception ignored) {}
             }
-            forwardServer = new ServerSocket(localPort, 10, InetAddress.getByName("127.0.0.1"));
+            forwardServer = new ServerSocket(localPort, 50, InetAddress.getByName("127.0.0.1"));
             new Thread(() -> {
                 while (!forwardServer.isClosed()) {
                     try {
                         Socket client = forwardServer.accept();
                         client.setTcpNoDelay(true);
+                        client.setSendBufferSize(512 * 1024);
+                        client.setReceiveBufferSize(512 * 1024);
                         forwardSockets.add(client);
                         com.tananaev.adblib.AdbStream stream = connection.open("tcp:" + remotePort);
                         forwardStreams.add(stream);
@@ -420,7 +425,7 @@ public class SendCommands {
                         new Thread(() -> {
                             try {
                                 InputStream in = client.getInputStream();
-                                byte[] buf = new byte[8192];
+                                byte[] buf = new byte[65536];
                                 int r;
                                 while ((r = in.read(buf)) != -1 && !stream.isClosed()) {
                                     byte[] chunk = new byte[r];
@@ -437,7 +442,6 @@ public class SendCommands {
                                     byte[] data = stream.read();
                                     if (data != null && data.length > 0) {
                                         out.write(data);
-                                        out.flush();
                                     }
                                 }
                             } catch (Exception ignored) {}
@@ -487,14 +491,32 @@ public class SendCommands {
 
         closeActiveSession();
         AdbSession session = null;
+        boolean isUsbLocal = "127.0.0.1".equals(targetHost);
+        int apiLevel = Math.max(31, Build.VERSION.SDK_INT);
 
-        // 1. If target port is not 5555, try Modern TLS first (Android 11+ Wireless Debugging)
-        if (targetAdbPort != 5555) {
+        // 1. If USB local connection, directly establish high-speed modern ADB session (no TLS probe overhead)
+        if (isUsbLocal) {
+            try {
+                Log.d(TAG, "Attempting high-speed Modern ADB connection for USB OTG to 127.0.0.1:" + targetAdbPort);
+                org.las2mile.scrcpy.adb.AdbKeyManager.AdbKeyPair kp = org.las2mile.scrcpy.adb.AdbKeyManager.getKeyPair(context);
+                io.github.muntashirakon.adb.AdbConnection modernConn = io.github.muntashirakon.adb.AdbConnection.create(
+                        targetHost, targetAdbPort, kp.getPrivateKey(), kp.getCertificate(), apiLevel
+                );
+                modernConn.connect();
+                session = new ModernSession(modernConn);
+                Log.d(TAG, "High-speed Modern ADB session established for USB (maxData=" + modernConn.getMaxData() + ")");
+            } catch (Exception e) {
+                Log.w(TAG, "Modern ADB failed for USB (" + e.getMessage() + "), falling back to legacy...", e);
+            }
+        }
+
+        // 2. Wi-Fi: If target port is not 5555, try Modern TLS first (Android 11+ Wireless Debugging)
+        if (!isUsbLocal && targetAdbPort != 5555) {
             try {
                 Log.d(TAG, "Attempting TLS connection to " + targetHost + ":" + targetAdbPort);
                 org.las2mile.scrcpy.adb.AdbKeyManager.AdbKeyPair kp = org.las2mile.scrcpy.adb.AdbKeyManager.getKeyPair(context);
                 io.github.muntashirakon.adb.AdbConnection modernConn = io.github.muntashirakon.adb.AdbConnection.create(
-                        targetHost, targetAdbPort, kp.getPrivateKey(), kp.getCertificate()
+                        targetHost, targetAdbPort, kp.getPrivateKey(), kp.getCertificate(), apiLevel
                 );
                 modernConn.connect();
                 session = new ModernSession(modernConn);
@@ -508,7 +530,7 @@ public class SendCommands {
             }
         }
 
-        // 2. If TLS was not used or failed (or if target port is 5555), try legacy unencrypted connection
+        // 3. If modern connection was not used or failed, try legacy unencrypted connection
         if (session == null && status == 1) {
             try {
                 Log.d(TAG, "Attempting Legacy ADB connection to " + targetHost + ":" + targetAdbPort);
@@ -523,13 +545,13 @@ public class SendCommands {
                 lastError = "目标端口 " + targetHost + ":" + targetAdbPort + " 连接被拒绝。若为 Android 11+ 无线调试请先点击【无线配对】并核对连接端口；若为传统模式请执行 'adb tcpip " + targetAdbPort + "'";
                 return;
             } catch (Exception e) {
-                // If legacy also failed and target was 5555, try TLS as last resort
+                // If legacy also failed and target was 5555, try modern TLS as last resort
                 if (targetAdbPort == 5555) {
                     try {
                         Log.d(TAG, "Trying TLS on 5555 as fallback");
                         org.las2mile.scrcpy.adb.AdbKeyManager.AdbKeyPair kp = org.las2mile.scrcpy.adb.AdbKeyManager.getKeyPair(context);
                         io.github.muntashirakon.adb.AdbConnection modernConn = io.github.muntashirakon.adb.AdbConnection.create(
-                                targetHost, targetAdbPort, kp.getPrivateKey(), kp.getCertificate()
+                                targetHost, targetAdbPort, kp.getPrivateKey(), kp.getCertificate(), apiLevel
                         );
                         modernConn.connect();
                         session = new ModernSession(modernConn);

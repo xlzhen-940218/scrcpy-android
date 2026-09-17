@@ -50,6 +50,7 @@
     <string name="back_button">◁</string>
     <string name="home_button">○</string>
     <string name="appswitch_button">□</string>
+    <string name="rotate_button">⟳</string>
 
     <!-- Pairing dialog -->
     <string name="pair_dialog_title">无线调试配对（Android 11+）</string>

@@ -39,6 +39,7 @@
             android:name=".ScreenMirrorActivity"
             android:theme="@style/AppTheme.ScreenMirror"
             android:resizeableActivity="false"
+            android:screenOrientation="fullSensor"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden"
             android:exported="false" />
 

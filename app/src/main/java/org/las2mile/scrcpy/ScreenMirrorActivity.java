@@ -178,12 +178,57 @@ public class ScreenMirrorActivity extends Activity
         if (sensorManager != null) {
             proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         }
+
+        // Physical orientation sensor listener
+        if (syncRotation) {
+            orientationEventListener = new android.view.OrientationEventListener(this, SensorManager.SENSOR_DELAY_NORMAL) {
+                @Override
+                public void onOrientationChanged(int orientation) {
+                    if (orientation == ORIENTATION_UNKNOWN) return;
+                    boolean isLandscape = (orientation >= 60 && orientation <= 120) || (orientation >= 240 && orientation <= 300);
+                    boolean isPortrait = (orientation >= 330 || orientation <= 30) || (orientation >= 150 && orientation <= 210);
+
+                    if (isLandscape && (lastPhysicalLandscape == null || !lastPhysicalLandscape)) {
+                        lastPhysicalLandscape = true;
+                        checkAndSyncRotation(true);
+                    } else if (isPortrait && (lastPhysicalLandscape == null || lastPhysicalLandscape)) {
+                        lastPhysicalLandscape = false;
+                        checkAndSyncRotation(false);
+                    }
+                }
+            };
+            if (orientationEventListener.canDetectOrientation()) {
+                orientationEventListener.enable();
+            }
+        }
+    }
+
+    private android.view.OrientationEventListener orientationEventListener;
+    private Boolean lastPhysicalLandscape = null;
+    private long lastRotationSyncTime = 0;
+
+    private synchronized void checkAndSyncRotation(boolean targetLandscape) {
+        if (!syncRotation || scrcpy == null) return;
+        long now = SystemClock.uptimeMillis();
+        if (now - lastRotationSyncTime < 1000) {
+            return;
+        }
+        if (remoteDeviceWidth <= 0 || remoteDeviceHeight <= 0) return;
+        boolean remoteLandscape = (remoteDeviceWidth > remoteDeviceHeight);
+        if (targetLandscape != remoteLandscape) {
+            lastRotationSyncTime = now;
+            Log.d(TAG, "Syncing remote rotation: targetLandscape=" + targetLandscape + ", remoteLandscape=" + remoteLandscape);
+            scrcpy.rotateDevice();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         applyFullscreen();
+        if (orientationEventListener != null && orientationEventListener.canDetectOrientation()) {
+            orientationEventListener.enable();
+        }
         if (!isFirstBind && serviceBound && scrcpy != null) {
             scrcpy.resume();
             registerProximity();
@@ -193,6 +238,9 @@ public class ScreenMirrorActivity extends Activity
     @Override
     protected void onPause() {
         super.onPause();
+        if (orientationEventListener != null) {
+            orientationEventListener.disable();
+        }
         if (sensorManager != null) sensorManager.unregisterListener(this);
         if (serviceBound && scrcpy != null) scrcpy.pause();
     }
@@ -200,6 +248,10 @@ public class ScreenMirrorActivity extends Activity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (orientationEventListener != null) {
+            orientationEventListener.disable();
+            orientationEventListener = null;
+        }
         if (sensorManager != null) sensorManager.unregisterListener(this);
         stopScrcpyService();
     }
@@ -207,15 +259,8 @@ public class ScreenMirrorActivity extends Activity
     @Override
     public void onConfigurationChanged(android.content.res.Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (syncRotation && scrcpy != null && remoteDeviceWidth > 0 && remoteDeviceHeight > 0) {
-            boolean currentLandscape = (newConfig.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE);
-            boolean remoteLandscape = (remoteDeviceWidth > remoteDeviceHeight);
-            if (currentLandscape != remoteLandscape) {
-                android.util.Log.d(TAG, "Controlling device orientation changed: currentLandscape="
-                        + currentLandscape + ", remoteLandscape=" + remoteLandscape + ". Syncing remote rotation.");
-                scrcpy.rotateDevice();
-            }
-        }
+        boolean currentLandscape = (newConfig.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE);
+        checkAndSyncRotation(currentLandscape);
         if (containerLayout != null) {
             containerLayout.post(this::adjustSurfaceLayout);
         }
@@ -278,12 +323,14 @@ public class ScreenMirrorActivity extends Activity
         }
 
         if (nav && !noControl) {
-            MaterialButton backBtn = findViewById(R.id.back_button);
-            MaterialButton homeBtn = findViewById(R.id.home_button);
+            MaterialButton backBtn   = findViewById(R.id.back_button);
+            MaterialButton homeBtn   = findViewById(R.id.home_button);
             MaterialButton switchBtn = findViewById(R.id.appswitch_button);
+            MaterialButton rotateBtn = findViewById(R.id.rotate_button);
             if (backBtn   != null) backBtn.setOnClickListener(v -> { if (scrcpy != null) scrcpy.sendKeyevent(4); });
             if (homeBtn   != null) homeBtn.setOnClickListener(v -> { if (scrcpy != null) scrcpy.sendKeyevent(3); });
             if (switchBtn != null) switchBtn.setOnClickListener(v -> { if (scrcpy != null) scrcpy.sendKeyevent(187); });
+            if (rotateBtn != null) rotateBtn.setOnClickListener(v -> { if (scrcpy != null) scrcpy.rotateDevice(); });
         }
     }
 

@@ -194,27 +194,17 @@ public final class Device {
         return pressReleaseKeycode(KeyEvent.KEYCODE_POWER, displayId, Device.INJECT_MODE_ASYNC);
     }
 
-    /**
-     * Disable auto-rotation (if enabled), set the screen rotation and re-enable auto-rotation (if it was enabled).
-     */
     public static void rotateDevice(int displayId) {
         assert displayId != DISPLAY_ID_NONE;
 
         WindowManager wm = ServiceManager.getWindowManager();
 
-        boolean accelerometerRotation = !wm.isRotationFrozen(displayId);
-
         int currentRotation = getCurrentRotation(displayId);
         int newRotation = (currentRotation & 1) ^ 1; // 0->1, 1->0, 2->1, 3->0
         String newRotationString = newRotation == 0 ? "portrait" : "landscape";
 
-        Ln.i("Device rotation requested: " + newRotationString);
+        Ln.i("Device rotation requested: " + newRotationString + " (rotation " + currentRotation + " -> " + newRotation + ")");
         wm.freezeRotation(displayId, newRotation);
-
-        // restore auto-rotate if necessary
-        if (accelerometerRotation) {
-            wm.thawRotation(displayId);
-        }
     }
 
     private static int getCurrentRotation(int displayId) {
