@@ -8,127 +8,163 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
+        android:padding="16dp"
         android:orientation="vertical"
         tools:context=".MainActivity">
 
+        <TextView
+            android:padding="10dp"
+            android:textSize="14sp"
+            android:text="要使用scrcpy-android (scrcpy 4.1)，请在被控手机开启网络ADB：\nadb tcpip 5555"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:text="手机IP与端口 (例如 192.168.0.73 或 192.168.0.73:5555)"
+            android:textAppearance="@android:style/TextAppearance" />
+
+        <EditText
+            android:id="@+id/editText_server_host"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="45"
+            android:inputType="textUri"
+            android:hint="IP 或 IP:端口"
+            android:minHeight="48dp"
+            android:importantForAutofill="no" />
+
+        <Button
+            android:id="@+id/button_adb_pair"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/btn_adb_pair"
+            android:textAllCaps="false"
+            style="?android:attr/buttonStyleSmall" />
+
+        <TextView
+            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="传输分辨率"
+            android:textAppearance="@android:style/TextAppearance" />
+
+        <Spinner
+            android:id="@+id/spinner_video_resolution"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/options_resolution_values"
+            android:minHeight="48dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="带宽码率"
+            android:textAppearance="@android:style/TextAppearance" />
+
+        <Spinner
+            android:id="@+id/spinner_video_bitrate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/options_bitrate_keys"
+            android:minHeight="48dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/label_codec"
+            android:textAppearance="@android:style/TextAppearance" />
+
+        <Spinner
+            android:id="@+id/spinner_video_codec"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/options_codec_keys"
+            android:minHeight="48dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/label_fps"
+            android:textAppearance="@android:style/TextAppearance" />
+
+        <Spinner
+            android:id="@+id/spinner_max_fps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/options_fps_keys"
+            android:minHeight="48dp" />
+
+        <Switch
+            android:id="@+id/switch_audio"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/switch_audio"
+            android:textSize="14sp" />
+
+        <Switch
+            android:id="@+id/switch_stay_awake"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="4dp"
+            android:text="@string/switch_stay_awake"
+            android:textSize="14sp" />
+
+        <Switch
+            android:id="@+id/switch_screen_off"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="4dp"
+            android:text="@string/switch_screen_off"
+            android:textSize="14sp" />
+
+        <Switch
+            android:id="@+id/switch0"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="4dp"
+            android:text="@string/switch0"
+            android:textSize="14sp" />
+
+        <Switch
+            android:id="@+id/switch1"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="4dp"
+            android:text="@string/switch1"
+            android:textSize="14sp" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:padding="20dp"
-                android:text="要使用scrcpy-lite,要开启手机的无线调试\nadb命令:adb tcpip 5555\n\n横屏向下滚动啊↓"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="20dp"
-                android:text="手机的IP地址,例如192.168.0.73"
-                android:textAppearance="@android:style/TextAppearance" />
-
-            <EditText
-                android:id="@+id/editText_server_host"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxLength="15"
-                android:ems="7"
-                android:inputType="text"
-                android:minHeight="48dp"
-                tools:ignore="LabelFor,SpeakableTextPresentCheck"
-                android:importantForAutofill="no" />
-
-
-            <TextView
-                android:textSize="16sp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="传输分辨率(不是手机分辨率，只影响清晰度随便选,同比例优先,建议选小一点)"
-                android:textAppearance="@android:style/TextAppearance" />
-
-            <Spinner
-                android:id="@+id/spinner_video_resolution"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:entries="@array/options_resolution_values"
-                android:minHeight="48dp"
-                tools:ignore="DuplicateSpeakableTextCheck" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="带宽码率 (影响清晰度和延迟)"
-                android:textAppearance="@android:style/TextAppearance" />
-
-            <Spinner
-                android:id="@+id/spinner_video_bitrate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:entries="@array/options_bitrate_keys"
-                android:minHeight="48dp" />
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"
             android:orientation="horizontal">
-
-            <Switch
-                android:id="@+id/switch0"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:text="@string/switch0"
-                android:textSize="15sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:orientation="horizontal">
-
-
-            <Switch
-                android:id="@+id/switch1"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:text="@string/switch1"
-                android:textSize="15sp" />
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:orientation="horizontal">
-
 
             <Button
                 android:id="@+id/button_start"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="内置模式"
-                android:textSize="30sp" />
+                android:text="全屏模式"
+                android:textSize="18sp" />
+
             <Button
                 android:id="@+id/button_start_float"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_marginStart="12dp"
                 android:text="悬浮窗模式"
-                android:textSize="30sp" />
+                android:textSize="18sp" />
         </LinearLayout>
 
     </LinearLayout>

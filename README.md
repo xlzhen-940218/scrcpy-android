@@ -1,51 +1,54 @@
-# scrcpy-android
+# scrcpy-android (v4.1)
 
-- This application is android port to desktop applicaton [**Scrcpy**](https://github.com/Genymobile/scrcpy).
+- This application is an Android port of the official desktop application [**Scrcpy**](https://github.com/Genymobile/scrcpy) (upgraded to **v4.1**).
+- Mirrors display, audio, multi-touch controls, and clipboard between Android devices over WiFi / ADB.
+- Uses direct socket streaming for low-latency hardware video (H.264 / H.265) and audio (RAW PCM / OPUS / AAC) decoding.
 
-- This application mirrors display and touch controls from a remote android device to scrcpy-android device.
+## Features (v4.1)
+- **Official Scrcpy 4.1 Server**: Directly integrated from official Genymobile scrcpy 4.1 server codebase.
+- **Audio Forwarding**: Real-time remote device audio streaming to local device speakers/headphones (RAW PCM, OPUS, AAC).
+- **Video Codecs**: Support for both **H.264 (AVC)** and **H.265 (HEVC)** hardware-accelerated video decoding.
+- **Max Framerate Limiting**: Choose between Unlimited, 60 FPS, or 30 FPS to optimize network bandwidth.
+- **Turn Screen Off**: Mirror with the remote device screen powered off to save battery.
+- **Stay Awake**: Prevent the remote device from sleeping while mirroring.
+- **Multi-Touch & Gestures**: Full multi-touch support for pinch-to-zoom, gestures, and games.
+- **Bidirectional Clipboard Sync**: Seamlessly sync clipboard between the controlling and controlled Android devices.
+- **Floating Window Mode**: Run remote screen in a draggable, resizable floating window.
 
-- scrcpy-android uses ADB-Connect interface to connect to android device to be mirrored.
+## Instructions to Use
 
+- Ensure both devices are connected to the same local Wi-Fi network.
+- Enable **Wireless Debugging / ADB over Network** on the target device to be mirrored.
+- Open `scrcpy-android` and enter the target device's IP address.
+- Configure your preferred settings:
+  - **Resolution & Bitrate** (e.g., 1280x720 @ 4Mbps).
+  - **Video Codec** (H.264 or H.265).
+  - **Max FPS** (Unlimited, 60, or 30).
+  - **Audio Forwarding** (Enable/Disable).
+  - **Turn Screen Off** / **Stay Awake**.
+- Tap **START**.
+- Accept and trust ("Always allow from this computer") the ADB authorization prompt on the target device.
+- Screen and audio mirroring will begin automatically!
 
+## Gestures & Controls
+- **Double Tap**: Wake up the remote device.
+- **Proximity Sensor Covered + Double Tap**: Put the remote device to sleep.
+- **Swipe up from bottom edge**: Reveal local system navigation bar.
+- **Back / Home / Menu**: Hardware navigation buttons forwarded to remote device.
 
-## Download
+## Building from Source
 
-[scrcpy-release-v2.1.apk](https://gitlab.com/las2mile/scrcpy-android/raw/master/release/scrcpy-release.apk)
+Requires Android SDK (API 34+) and Java 17.
 
+```bash
+# Build release server jar and client debug APK
+./gradlew assembleDebug
+```
 
-## Instructions to use
+The APK will be generated at `app/build/outputs/apk/debug/app-debug.apk`.
 
-- Make sure both devices are on same local network.
-
-- Enable **ADB-connect/ADB-wireless/ADB over network** on the device to be mirrored. 
-
-- Open scrcpy-android app and enter ip address of device to be mirrored.
-
-- Select display parameters and bitrate from drop-down menu(1280x720 and 2Mbps works best).
-
-- Set **Navbar** switch if the device to be mirrored has only hardware navigation buttons.
-
-- Hit **start** button.
-
-- Accept and trust(check always allow from this computer) the ADB connection prompt on target device(Some custom roms don't have this prompt).
-
-- Thats all! You should be seeing the screen of remote android device.
-
-- To wake up the remote device, **double tap anywhere on screen**.
-
-- To put the remote device to sleep, **close proxmity sensor and double tap anywhere on the screen**. 
-
-- To bring back the local android system navbar while mirroring the remote device, **swipe up from the bottom edge of screen**.
-
-
-## Building with Gradle
-
-    ./gradlew assembleDebug
-    
-    
- 
 ## LICENSE
 
-- scrcpy-android part is licensed under the GPLv3.
+- Client application is licensed under GPLv3.
+- Server component is licensed under Apache License 2.0.
 
-- The server part is licensed under the Apache License 2.0.

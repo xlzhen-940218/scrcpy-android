@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/tv_pair_instruction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="4dp"
+        android:text="@string/pair_dialog_instruction"
+        android:textColor="#333333"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/pair_dialog_host_label"
+        android:textColor="#666666"
+        android:textSize="12sp" />
+
+    <EditText
+        android:id="@+id/et_pair_host"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/pair_dialog_host_hint"
+        android:inputType="textUri"
+        android:singleLine="true"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/pair_dialog_port_label"
+        android:textColor="#666666"
+        android:textSize="12sp" />
+
+    <EditText
+        android:id="@+id/et_pair_port"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/pair_dialog_port_hint"
+        android:inputType="number"
+        android:singleLine="true"
+        android:textSize="15sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/pair_dialog_code_label"
+        android:textColor="#666666"
+        android:textSize="12sp" />
+
+    <EditText
+        android:id="@+id/et_pair_code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/pair_dialog_code_hint"
+        android:inputType="number"
+        android:maxLength="6"
+        android:singleLine="true"
+        android:textSize="18sp" />
+
+    <ProgressBar
+        android:id="@+id/pb_pair_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="12dp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_pair_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:textColor="#D32F2F"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+</LinearLayout>

@@ -1,57 +1,53 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 31
+    namespace = 'com.genymobile.scrcpy'
+    compileSdk = 36
     defaultConfig {
-        applicationId "org.las2mile.scrcpy"
-        minSdkVersion 19
-        targetSdkVersion 31
-        versionCode 3
-        versionName "1.2"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
+        applicationId = "com.genymobile.scrcpy"
+        minSdkVersion 21
+        targetSdkVersion 36
+        versionCode 40100
+        versionName "4.1"
+        testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    buildFeatures {
+        buildConfig = true
+        aidl = true
+    }
+    lint {
+        disable 'UseRequiresApi'
+    }
 
+    tasks.register('copyRelease') {
+        dependsOn('packageRelease')
+        doLast {
+            def apkFile = file("${layout.buildDirectory.get().asFile}/outputs/apk/release/server-release-unsigned.apk")
+            if (apkFile.exists()) {
+                copy {
+                    from apkFile
+                    into "${rootDir}/app/src/main/assets"
+                    rename('server-release-unsigned.apk', 'scrcpy-server.jar')
+                }
+                println ">> [scrcpy] Updated app/src/main/assets/scrcpy-server.jar (${apkFile.length()} bytes)"
+            } else {
+                throw new GradleException("server-release-unsigned.apk not found at ${apkFile}")
+            }
         }
     }
 
-    task copyRelease(dependsOn: 'deleteServer', type: Copy){
-        from file('build/outputs/apk/release/server-release-unsigned.apk')
-        into file('../app/src/main/assets')
-        rename('server-release-unsigned.apk', 'scrcpy-server.jar')
-    }
-
-    task deleteServer(type: Delete){
-	delete "../app/src/main/assets/scrcpy-server.jar"
-   }
-
-
-    task copyDebug (dependsOn: 'deleteServer', type: Copy){
-        from file("build/outputs/apk/debug/server-debug.apk")
-        into file("../app/src/main/assets/")
-        rename('server-debug.apk', 'scrcpy-server.jar')
-    }
-
     afterEvaluate {
-        packageRelease.finalizedBy(copyRelease)
-    }
-
-    afterEvaluate {
-        packageDebug.finalizedBy(copyDebug)
+        tasks.named('assembleRelease').configure {
+            dependsOn('copyRelease')
+        }
     }
 }
-
-
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation 'junit:junit:4.13.2'
 }
-
-apply from: "$project.rootDir/config/android-checkstyle.gradle"
-

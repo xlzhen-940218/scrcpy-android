@@ -11,8 +11,24 @@
     <string name="back_button">v</string>
     <string name="switch0">No Control  (check this if remote device control is not required)</string>
     <string name="switch1">Nav Bar  (check this if remote device does not have on-screen nav bar)</string>
+    <string name="label_codec">视频编码格式</string>
+    <string name="label_fps">最大帧率 (Max FPS)</string>
+    <string name="switch_audio">音频转发 (捕获手机声音并在当前设备播放)</string>
+    <string name="switch_stay_awake">保持唤醒 (防止手机休眠)</string>
+    <string name="switch_screen_off">熄屏镜像 (连接后关闭手机屏幕以省电)</string>
 
-
+    <string name="btn_adb_pair">无线配对 (Android 11+)</string>
+    <string name="pair_dialog_title">无线调试配对 (Android 11+)</string>
+    <string name="pair_dialog_instruction">请在被控手机进入【开发者选项】→【无线调试】→ 点击【使用配对码配对设备】，在此输入显示的配对端口与 6 位配对码：</string>
+    <string name="pair_dialog_host_label">被控设备 IP 地址</string>
+    <string name="pair_dialog_host_hint">例如 192.168.251.233</string>
+    <string name="pair_dialog_port_label">配对端口 (Pairing Port)</string>
+    <string name="pair_dialog_port_hint">例如 39123</string>
+    <string name="pair_dialog_code_label">6 位配对码 (Pairing Code)</string>
+    <string name="pair_dialog_code_hint">例如 123456</string>
+    <string name="pair_dialog_btn_pair">开始配对</string>
+    <string name="pair_dialog_btn_cancel">取消</string>
+    <string name="pair_success">配对成功！请在主界面输入无线调试连接端口并点击 Start 即可投屏</string>
 
     <string-array name="options_resolution_values">
         <item>1920x1080</item>
@@ -25,6 +41,7 @@
     </string-array>
 
     <string-array name="options_bitrate_keys">
+        <item>8 Mbps</item>
         <item>6 Mbps</item>
         <item>4 Mbps</item>
         <item>2 Mbps</item>
@@ -32,12 +49,33 @@
     </string-array>
 
     <integer-array name="options_bitrate_values">
+        <item>8000000</item>
         <item>6144000</item>
         <item>4096000</item>
         <item>2048000</item>
         <item>1024000</item>
     </integer-array>
 
+    <string-array name="options_codec_keys">
+        <item>H.264 (兼容性好)</item>
+        <item>H.265 / HEVC (高压缩率)</item>
+    </string-array>
+
+    <string-array name="options_codec_values">
+        <item>h264</item>
+        <item>h265</item>
+    </string-array>
+
+    <string-array name="options_fps_keys">
+        <item>无限制 (默认)</item>
+        <item>60 FPS</item>
+        <item>30 FPS</item>
+    </string-array>
+
+    <integer-array name="options_fps_values">
+        <item>0</item>
+        <item>60</item>
+        <item>30</item>
+    </integer-array>
+
 </resources>
-
-

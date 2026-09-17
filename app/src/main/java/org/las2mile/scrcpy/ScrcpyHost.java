@@ -10,24 +10,17 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.Surface;
-import android.view.SurfaceView;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
 
-public class ScrcpyHost implements Scrcpy.ServiceCallbacks{
+public class ScrcpyHost implements Scrcpy.ServiceCallbacks {
+    private static final String TAG = "ScrcpyHost";
 
     private Context context;
-    //scrcpy 相关
-    private Scrcpy scrcpy;
-    private static boolean serviceBound = false;
+    private volatile Scrcpy scrcpy;
+    private static volatile boolean serviceBound = false;
     private static boolean first_time = true;
 
     private static int screenWidth;
@@ -41,9 +34,8 @@ public class ScrcpyHost implements Scrcpy.ServiceCallbacks{
 
     private byte[] fileBase64;
     private SendCommands sendCommands;
-    private String local_ip;
 
-    ConnectCallBack connectCallBack;
+    private ConnectCallBack connectCallBack;
 
     public void setConnectCallBack(ConnectCallBack connectCallBack) {
         this.connectCallBack = connectCallBack;
@@ -53,61 +45,82 @@ public class ScrcpyHost implements Scrcpy.ServiceCallbacks{
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             scrcpy = ((Scrcpy.MyServiceBinder) iBinder).getService();
+            if (scrcpy == null) return;
             scrcpy.setServiceCallbacks(ScrcpyHost.this);
             serviceBound = true;
+
             if (first_time) {
-                scrcpy.start(surface, serverAdr, screenHeight, screenWidth);
+                scrcpy.start(surface, serverAdr, 7007, screenHeight, screenWidth, false);
                 int count = 100;
-                while (count!=0 && !scrcpy.check_socket_connection()){
-                    count --;
+                while (count != 0) {
+                    Scrcpy s = scrcpy;
+                    if (s == null || !serviceBound) break;
+                    if (s.check_socket_connection()) break;
+                    count--;
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        break;
                     }
                 }
-                if (count == 0){
-                    if (serviceBound) {
+                if (count == 0) {
+                    if (serviceBound && scrcpy != null) {
                         scrcpy.StopService();
-                        context.unbindService(serviceConnection);
+                        try {
+                            context.unbindService(serviceConnection);
+                        } catch (Exception ignored) {}
                         serviceBound = false;
-
+                        scrcpy = null;
                     }
                     Toast.makeText(context, "Connection Timed out", Toast.LENGTH_SHORT).show();
-                }else{
-                    int[] rem_res = scrcpy.get_remote_device_resolution();
-                    remote_device_height = rem_res[1];
-                    remote_device_width = rem_res[0];
+                } else {
+                    Scrcpy s = scrcpy;
+                    if (s != null) {
+                        int[] rem_res = s.get_remote_device_resolution();
+                        if (rem_res != null && rem_res.length >= 2) {
+                            remote_device_width = rem_res[0];
+                            remote_device_height = rem_res[1];
+                        }
+                    }
                     first_time = false;
-                    Log.d("fuck", "onServiceConnected: "+remote_device_height+"|"+remote_device_width);
-                    connectCallBack.onConnect(Math.min(remote_device_width,remote_device_height),Math.max(remote_device_width,remote_device_height));
+                    Log.d(TAG, "onServiceConnected: " + remote_device_width + "x" + remote_device_height);
+                    if (connectCallBack != null) {
+                        connectCallBack.onConnect(Math.min(remote_device_width, remote_device_height),
+                                Math.max(remote_device_width, remote_device_height));
+                    }
                 }
             } else {
-                scrcpy.setParms(surface, screenWidth, screenHeight);
+                if (scrcpy != null) {
+                    scrcpy.setParms(surface, screenWidth, screenHeight);
+                }
             }
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             serviceBound = false;
+            scrcpy = null;
         }
     };
 
-
-    private void exectJar(){
+    private void exectJar() {
         AssetManager assetManager = context.getAssets();
-        try {
-            InputStream input_Stream = assetManager.open("scrcpy-server.jar");
-            byte[] buffer = new byte[input_Stream.available()];
-            input_Stream.read(buffer);
-            fileBase64 = Base64.encode(buffer, 2);
+        try (InputStream inputStream = assetManager.open("scrcpy-server.jar")) {
+            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+            byte[] buffer = new byte[16384];
+            int read;
+            while ((read = inputStream.read(buffer)) != -1) {
+                baos.write(buffer, 0, read);
+            }
+            byte[] rawBytes = baos.toByteArray();
+            fileBase64 = Base64.encode(rawBytes, Base64.NO_WRAP);
+            Log.d(TAG, "Loaded scrcpy-server.jar: " + rawBytes.length + " bytes");
         } catch (IOException e) {
-            Log.e("Asset Manager", e.getMessage());
+            Log.e(TAG, "Asset Manager error: " + e.getMessage());
         }
     }
 
-
-    public void connect(Context context,String clientIp,int width, int height, int bitrate, Surface display){
+    public void connect(Context context, String clientIp, int width, int height, int bitrate, Surface display) {
         this.context = context;
         screenWidth = width;
         screenHeight = height;
@@ -118,12 +131,14 @@ public class ScrcpyHost implements Scrcpy.ServiceCallbacks{
         exectJar();
         sendCommands = new SendCommands();
 
-        local_ip = wifiIpAddress();
         if (!serverAdr.isEmpty()) {
-            if (sendCommands.SendAdbCommands(context, fileBase64, serverAdr, local_ip, videoBitrate, Math.max(screenHeight, screenWidth)) == 0) {
+            if (sendCommands.SendAdbCommands(context, fileBase64, serverAdr, 7007, videoBitrate,
+                    Math.max(screenHeight, screenWidth), 0, "h264", false, "opus", true, false) == 0) {
                 start_screen_copy_magic();
             } else {
-                Toast.makeText(context, "Network OR ADB connection failed", Toast.LENGTH_SHORT).show();
+                String err = sendCommands.getLastError();
+                String msg = (err != null && !err.isEmpty()) ? err : "Network OR ADB connection failed";
+                Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
             }
         } else {
             Toast.makeText(context, "Server Address Empty", Toast.LENGTH_SHORT).show();
@@ -136,72 +151,46 @@ public class ScrcpyHost implements Scrcpy.ServiceCallbacks{
         context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
-
-    protected String wifiIpAddress() {
-//https://stackoverflow.com/questions/6064510/how-to-get-ip-address-of-the-device-from-code
-        try {
-            InetAddress ipv4 = null;
-            InetAddress ipv6 = null;
-            for (Enumeration<NetworkInterface> en = NetworkInterface
-                    .getNetworkInterfaces(); en.hasMoreElements(); ) {
-                NetworkInterface int_f = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = int_f
-                        .getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (inetAddress instanceof Inet6Address) {
-                        ipv6 = inetAddress;
-                        continue;
-                    }
-                    if (inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
-                        ipv4 = inetAddress;
-                        continue;
-                    }
-                    return inetAddress.getHostAddress();
-                }
-            }
-            if (ipv6 != null) {
-                return ipv6.getHostAddress();
-            }
-            if (ipv4 != null) {
-                return ipv4.getHostAddress();
-            }
-            return null;
-        } catch (SocketException ex) {
-            ex.printStackTrace();
+    public boolean touch(MotionEvent motionEvent, int surfaceW, int surfaceH) {
+        if (scrcpy != null) {
+            return scrcpy.touchevent(motionEvent, surfaceW, surfaceH);
         }
-        return null;
+        return false;
     }
 
-    public boolean touch(MotionEvent motionEvent,int surfaceW,int surfaceH){
-        return scrcpy.touchevent(motionEvent, surfaceW, surfaceH);
+    public void keyEvent(int keyCode) {
+        if (scrcpy != null) {
+            scrcpy.sendKeyevent(keyCode);
+        }
     }
-
-    public void keyEvent(int keyCode){
-        scrcpy.sendKeyevent(keyCode);
-    }
-
 
     @Override
     public void loadNewRotation() {
-        if (first_time){
+        if (scrcpy != null) {
             int[] rem_res = scrcpy.get_remote_device_resolution();
-            remote_device_height = rem_res[1];
             remote_device_width = rem_res[0];
+            remote_device_height = rem_res[1];
             first_time = false;
+            if (connectCallBack != null) {
+                connectCallBack.onConnect(Math.min(remote_device_width, remote_device_height),
+                        Math.max(remote_device_width, remote_device_height));
+            }
         }
-        //TODO
     }
 
-    public void destroy(){
+    public void destroy() {
         if (serviceBound) {
-            scrcpy.StopService();
+            if (scrcpy != null) {
+                scrcpy.StopService();
+            }
             context.unbindService(serviceConnection);
             Intent intent = new Intent(context, Scrcpy.class);
             context.stopService(intent);
+            serviceBound = false;
         }
     }
 
-    public interface ConnectCallBack{
-        void onConnect(float w,float h);
+    public interface ConnectCallBack {
+        void onConnect(float w, float h);
     }
 }
