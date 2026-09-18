@@ -195,8 +195,9 @@ public class FloatService extends Service implements Scrcpy.ServiceCallbacks {
     }
 
     private void setupDisplay() {
-        displayWindow = new DisplayWindow(getApplicationContext());
-        windowManager = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        Context themedContext = new androidx.appcompat.view.ContextThemeWrapper(this, R.style.AppTheme);
+        displayWindow = new DisplayWindow(themedContext);
+        windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 
         lp = new WindowManager.LayoutParams();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -234,6 +235,9 @@ public class FloatService extends Service implements Scrcpy.ServiceCallbacks {
         displayWindow.setActionCallback(actionType -> {
             if (scrcpy == null) return;
             switch (actionType) {
+                case DisplayWindow.ACTION_POWER:
+                    scrcpy.sendKeyevent(KeyEvent.KEYCODE_POWER);
+                    break;
                 case DisplayWindow.ACTION_BACK:
                     scrcpy.sendKeyevent(KeyEvent.KEYCODE_BACK);
                     break;
@@ -242,6 +246,12 @@ public class FloatService extends Service implements Scrcpy.ServiceCallbacks {
                     break;
                 case DisplayWindow.ACTION_MENU:
                     scrcpy.sendKeyevent(KeyEvent.KEYCODE_APP_SWITCH);
+                    break;
+                case DisplayWindow.ACTION_VOLUME_DOWN:
+                    scrcpy.sendKeyevent(KeyEvent.KEYCODE_VOLUME_DOWN);
+                    break;
+                case DisplayWindow.ACTION_VOLUME_UP:
+                    scrcpy.sendKeyevent(KeyEvent.KEYCODE_VOLUME_UP);
                     break;
                 case DisplayWindow.ACTION_ROTATE:
                     scrcpy.rotateDevice();

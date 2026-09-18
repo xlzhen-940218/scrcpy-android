@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand / Primary (Dark Teal) -->
+    <color name="md_primary">#4DD0E1</color>
+    <color name="md_on_primary">#00363D</color>
+    <color name="md_primary_container">#004F58</color>
+    <color name="md_on_primary_container">#97F0FF</color>
+
+    <!-- Secondary -->
+    <color name="md_secondary">#B1CBD0</color>
+    <color name="md_on_secondary">#1C3438</color>
+    <color name="md_secondary_container">#334B4F</color>
+    <color name="md_on_secondary_container">#CCE7EC</color>
+
+    <!-- Surface -->
+    <color name="md_surface">#16191A</color>
+    <color name="md_on_surface">#E0E3E4</color>
+    <color name="md_surface_variant">#242A2C</color>
+    <color name="md_on_surface_variant">#BFC8CA</color>
+    <color name="md_surface_container">#1D2122</color>
+    <color name="md_surface_container_high">#282D2E</color>
+
+    <!-- Background -->
+    <color name="md_background">#111415</color>
+    <color name="md_on_background">#E0E3E4</color>
+
+    <!-- Outline -->
+    <color name="md_outline">#899294</color>
+    <color name="md_outline_variant">#3F484A</color>
+
+    <!-- Error -->
+    <color name="md_error">#FFB4AB</color>
+    <color name="md_on_error">#690005</color>
+
+    <!-- Legacy -->
+    <color name="white">#16191A</color>
+    <color name="black">#FFFFFF</color>
+</resources>

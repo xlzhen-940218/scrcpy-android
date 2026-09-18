@@ -51,6 +51,9 @@
     <string name="home_button">○</string>
     <string name="appswitch_button">□</string>
     <string name="rotate_button">⟳</string>
+    <string name="power_button">⏻</string>
+    <string name="volup_button">＋</string>
+    <string name="voldown_button">－</string>
 
     <!-- Pairing dialog -->
     <string name="pair_dialog_title">无线调试配对（Android 11+）</string>
@@ -182,5 +185,15 @@
     <string name="usb_unknown_device">未知设备</string>
     <string name="usb_device_format">USB 设备 (%1$d:%2$d)</string>
     <string name="usb_err_permission_denied">未授予 USB 权限，无法连接</string>
+
+    <!-- History & Theme -->
+    <string name="section_history">历史记录</string>
+    <string name="hint_no_history">暂无连接历史记录</string>
+    <string name="btn_clear_history">清空</string>
+    <string name="dialog_clear_history_title">清空历史记录</string>
+    <string name="dialog_clear_history_msg">确定要清空所有连接历史记录吗？</string>
+    <string name="dialog_btn_clear">清空</string>
+    <string name="msg_history_cleared">已清空连接历史记录</string>
+    <string name="menu_theme_toggle">切换黑夜模式</string>
 
 </resources>

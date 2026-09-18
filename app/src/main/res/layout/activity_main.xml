@@ -18,10 +18,24 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:navigationIcon="@drawable/ic_launcher_foreground"
-            app:navigationIconTint="?attr/colorPrimary"
+            app:navigationIcon="@drawable/ic_brand_logo"
             app:title="@string/app_name"
-            app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge" />
+            app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_theme_toggle"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="12dp"
+                android:padding="10dp"
+                android:contentDescription="@string/menu_theme_toggle"
+                app:icon="@drawable/ic_theme_toggle"
+                app:iconTint="?attr/colorPrimary"
+                app:iconGravity="textStart"
+                style="@style/Widget.Material3.Button.IconButton" />
+
+        </com.google.android.material.appbar.MaterialToolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -108,17 +122,19 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/label_server_ip"
+                            app:placeholderText="@string/hint_server_ip"
                             app:helperText="@string/hint_adb_instruction"
                             app:helperTextEnabled="true"
+
                             style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-                            <com.google.android.material.textfield.TextInputEditText
+                            <com.google.android.material.textfield.MaterialAutoCompleteTextView
                                 android:id="@+id/editText_server_host"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:inputType="textUri"
                                 android:maxLength="45"
-                                android:hint="@string/hint_server_ip"
+                                android:padding="10dp"
                                 android:importantForAutofill="no"
                                 android:imeOptions="actionDone"
                                 android:nextFocusDown="@+id/button_adb_pair" />
@@ -196,6 +212,73 @@
                             app:icon="@android:drawable/stat_sys_data_bluetooth" />
 
                     </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ═══ HISTORY CARD ═══ -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_history"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardElevation="0dp"
+                app:cardCornerRadius="16dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorOutlineVariant"
+                app:cardBackgroundColor="?attr/colorSurface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/section_history"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                            android:textColor="?attr/colorPrimary" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_clear_history"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
+                            android:text="@string/btn_clear_history"
+                            android:textSize="12sp"
+                            android:minHeight="0dp"
+                            android:minWidth="0dp"
+                            style="@style/Widget.Material3.Button.TextButton" />
+
+                    </LinearLayout>
+
+                    <!-- Container for history items -->
+                    <LinearLayout
+                        android:id="@+id/layout_history_items"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+
+                    <TextView
+                        android:id="@+id/tv_empty_history"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/hint_no_history"
+                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                        android:textColor="?attr/colorOutline"
+                        android:gravity="center"
+                        android:padding="8dp" />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

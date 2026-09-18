@@ -30,7 +30,7 @@
         <activity
             android:name=".MainActivity"
             android:resizeableActivity="true"
-            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden|uiMode"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -47,7 +47,7 @@
             android:resizeableActivity="false"
             android:screenOrientation="fullSensor"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden"
-            android:exported="false" />
+            android:exported="true" />
 
         <service
             android:name=".Scrcpy"

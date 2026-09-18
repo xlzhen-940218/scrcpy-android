@@ -16,72 +16,111 @@
         app:layout_constraintBottom_toTopOf="@+id/nav_button_bar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constrainedWidth="true"
+        app:layout_constrainedHeight="true"
         app:layout_constraintVertical_bias="0.5"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintDimensionRatio="H,16:9" />
 
-
-    <!-- Navigation button bar: anchored to bottom, hidden by default -->
+    <!-- Navigation button bar: anchored to bottom, elevated above video -->
     <LinearLayout
         android:id="@+id/nav_button_bar"
         android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:background="#CC000000"
+        android:layout_height="52dp"
+        android:background="#EE16191A"
         android:orientation="horizontal"
-        android:visibility="gone"
+        android:gravity="center_vertical"
+        android:visibility="visible"
+        android:elevation="8dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <com.google.android.material.button.MaterialButton
+        <!-- Power Button -->
+        <ImageView
+            android:id="@+id/power_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="12dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/bg_btn_ripple"
+            android:src="@drawable/ic_nav_power"
+            android:contentDescription="@string/power_button" />
+
+        <!-- Back Button -->
+        <ImageView
             android:id="@+id/back_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="@string/back_button"
-            android:textColor="@android:color/white"
-            android:textSize="20sp"
-            android:focusable="true"
-            android:nextFocusRight="@+id/home_button"
-            style="@style/Widget.Material3.Button.TextButton" />
+            android:padding="14dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/bg_btn_ripple"
+            android:src="@drawable/ic_nav_back"
+            android:contentDescription="@string/back_button" />
 
-        <com.google.android.material.button.MaterialButton
+        <!-- Home Button -->
+        <ImageView
             android:id="@+id/home_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="@string/home_button"
-            android:textColor="@android:color/white"
-            android:textSize="22sp"
-            android:focusable="true"
-            android:nextFocusLeft="@+id/back_button"
-            android:nextFocusRight="@+id/appswitch_button"
-            style="@style/Widget.Material3.Button.TextButton" />
+            android:padding="12dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/bg_btn_ripple"
+            android:src="@drawable/ic_nav_home"
+            android:contentDescription="@string/home_button" />
 
-        <com.google.android.material.button.MaterialButton
+        <!-- App Switch / Recents -->
+        <ImageView
             android:id="@+id/appswitch_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="@string/appswitch_button"
-            android:textColor="@android:color/white"
-            android:textSize="22sp"
-            android:focusable="true"
-            android:nextFocusLeft="@+id/home_button"
-            android:nextFocusRight="@+id/rotate_button"
-            style="@style/Widget.Material3.Button.TextButton" />
+            android:padding="12dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/bg_btn_ripple"
+            android:src="@drawable/ic_nav_tasks"
+            android:contentDescription="@string/appswitch_button" />
 
-        <com.google.android.material.button.MaterialButton
+        <!-- Volume Down -->
+        <ImageView
+            android:id="@+id/vol_down_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="12dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/bg_btn_ripple"
+            android:src="@drawable/ic_nav_vol_down"
+            android:contentDescription="@string/voldown_button" />
+
+        <!-- Volume Up -->
+        <ImageView
+            android:id="@+id/vol_up_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="12dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/bg_btn_ripple"
+            android:src="@drawable/ic_nav_vol_up"
+            android:contentDescription="@string/volup_button" />
+
+        <!-- Rotate Button -->
+        <ImageView
             android:id="@+id/rotate_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="@string/rotate_button"
-            android:textColor="@android:color/white"
-            android:textSize="22sp"
-            android:focusable="true"
-            android:nextFocusLeft="@+id/appswitch_button"
-            style="@style/Widget.Material3.Button.TextButton" />
+            android:padding="12dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/bg_btn_ripple"
+            android:src="@drawable/ic_nav_rotate"
+            android:contentDescription="@string/rotate_button" />
 
     </LinearLayout>
 

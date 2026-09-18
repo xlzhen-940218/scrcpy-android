@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     namespace = 'com.genymobile.scrcpy'
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
         applicationId = "com.genymobile.scrcpy"
         minSdkVersion 21
-        targetSdkVersion 36
-        versionCode 40100
-        versionName "4.1"
+        targetSdkVersion 37
+        versionCode 40101
+        versionName "4.1.1"
         testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -24,28 +24,28 @@ android {
         disable 'UseRequiresApi'
     }
 
-    tasks.register('copyRelease') {
-        dependsOn('packageRelease')
-        doLast {
-            def apkFile = file("${layout.buildDirectory.get().asFile}/outputs/apk/release/server-release-unsigned.apk")
-            if (apkFile.exists()) {
-                copy {
-                    from apkFile
-                    into "${rootDir}/app/src/main/assets"
-                    rename('server-release-unsigned.apk', 'scrcpy-server.jar')
-                }
-                println ">> [scrcpy] Updated app/src/main/assets/scrcpy-server.jar (${apkFile.length()} bytes)"
-            } else {
-                throw new GradleException("server-release-unsigned.apk not found at ${apkFile}")
-            }
-        }
-    }
-
-    afterEvaluate {
-        tasks.named('assembleRelease').configure {
-            dependsOn('copyRelease')
-        }
-    }
+//    tasks.register('copyRelease') {
+//        dependsOn('packageRelease')
+//        doLast {
+//            def apkFile = file("${layout.buildDirectory.get().asFile}/outputs/apk/release/server-release-unsigned.apk")
+//            if (apkFile.exists()) {
+//                copy {
+//                    from apkFile
+//                    into "${rootDir}/app/src/main/assets"
+//                    rename('server-release-unsigned.apk', 'scrcpy-server.jar')
+//                }
+//                println ">> [scrcpy] Updated app/src/main/assets/scrcpy-server.jar (${apkFile.length()} bytes)"
+//            } else {
+//                throw new GradleException("server-release-unsigned.apk not found at ${apkFile}")
+//            }
+//        }
+//    }
+//
+//    afterEvaluate {
+//        tasks.named('assembleRelease').configure {
+//            dependsOn('copyRelease')
+//        }
+//    }
 }
 
 dependencies {

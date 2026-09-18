@@ -154,7 +154,7 @@ public class ScreenMirrorActivity extends Activity
         screenWidth    = i.getIntExtra(EXTRA_SCREEN_WIDTH, 1280);
         screenHeight   = i.getIntExtra(EXTRA_SCREEN_HEIGHT, 720);
         audioEnabled   = i.getBooleanExtra(EXTRA_AUDIO_ENABLED, false);
-        nav            = i.getBooleanExtra(EXTRA_NAV, false);
+        nav            = i.getBooleanExtra(EXTRA_NAV, true);
         noControl      = i.getBooleanExtra(EXTRA_NO_CONTROL, false);
         screenOff      = i.getBooleanExtra(EXTRA_SCREEN_OFF, false);
         syncRotation   = i.getBooleanExtra(EXTRA_SYNC_ROTATION, true);
@@ -167,10 +167,13 @@ public class ScreenMirrorActivity extends Activity
 
         // Nav bar visibility
         LinearLayout navBar = findViewById(R.id.nav_button_bar);
-        if (nav && !noControl) {
-            navBar.setVisibility(LinearLayout.VISIBLE);
-        } else {
-            navBar.setVisibility(LinearLayout.GONE);
+        if (navBar != null) {
+            if (nav && !noControl) {
+                navBar.setVisibility(LinearLayout.VISIBLE);
+                navBar.bringToFront();
+            } else {
+                navBar.setVisibility(LinearLayout.GONE);
+            }
         }
 
         // Use SurfaceHolder callback so we get surface ready event
@@ -358,20 +361,29 @@ public class ScreenMirrorActivity extends Activity
         }
 
         if (nav && !noControl) {
-            MaterialButton backBtn   = findViewById(R.id.back_button);
-            MaterialButton homeBtn   = findViewById(R.id.home_button);
-            MaterialButton switchBtn = findViewById(R.id.appswitch_button);
-            MaterialButton rotateBtn = findViewById(R.id.rotate_button);
-            if (backBtn   != null) backBtn.setOnClickListener(v -> { if (scrcpy != null) scrcpy.sendKeyevent(4); });
-            if (homeBtn   != null) homeBtn.setOnClickListener(v -> { if (scrcpy != null) scrcpy.sendKeyevent(3); });
-            if (switchBtn != null) switchBtn.setOnClickListener(v -> { if (scrcpy != null) scrcpy.sendKeyevent(187); });
-            if (rotateBtn != null) rotateBtn.setOnClickListener(v -> { if (scrcpy != null) scrcpy.rotateDevice(); });
+            View powerBtn   = findViewById(R.id.power_button);
+            View backBtn    = findViewById(R.id.back_button);
+            View homeBtn    = findViewById(R.id.home_button);
+            View switchBtn  = findViewById(R.id.appswitch_button);
+            View volDownBtn = findViewById(R.id.vol_down_button);
+            View volUpBtn   = findViewById(R.id.vol_up_button);
+            View rotateBtn  = findViewById(R.id.rotate_button);
+
+            if (powerBtn   != null) powerBtn.setOnClickListener(v -> { if (scrcpy != null) scrcpy.sendKeyevent(KeyEvent.KEYCODE_POWER); });
+            if (backBtn    != null) backBtn.setOnClickListener(v -> { if (scrcpy != null) scrcpy.sendKeyevent(KeyEvent.KEYCODE_BACK); });
+            if (homeBtn    != null) homeBtn.setOnClickListener(v -> { if (scrcpy != null) scrcpy.sendKeyevent(KeyEvent.KEYCODE_HOME); });
+            if (switchBtn  != null) switchBtn.setOnClickListener(v -> { if (scrcpy != null) scrcpy.sendKeyevent(KeyEvent.KEYCODE_APP_SWITCH); });
+            if (volDownBtn != null) volDownBtn.setOnClickListener(v -> { if (scrcpy != null) scrcpy.sendKeyevent(KeyEvent.KEYCODE_VOLUME_DOWN); });
+            if (volUpBtn   != null) volUpBtn.setOnClickListener(v -> { if (scrcpy != null) scrcpy.sendKeyevent(KeyEvent.KEYCODE_VOLUME_UP); });
+            if (rotateBtn  != null) rotateBtn.setOnClickListener(v -> { if (scrcpy != null) scrcpy.rotateDevice(); });
         }
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // Forward D-pad / media keys to the remote device
+        // Forward D-pad / media keys to the remote device.
+        // Note: Volume keys are intentionally NOT forwarded here — use the on-screen
+        // volume buttons in the navigation bar instead, so physical keys adjust local volume.
         if (scrcpy != null && serviceBound) {
             switch (keyCode) {
                 case KeyEvent.KEYCODE_DPAD_UP:
@@ -383,8 +395,6 @@ public class ScreenMirrorActivity extends Activity
                 case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                 case KeyEvent.KEYCODE_MEDIA_NEXT:
                 case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-                case KeyEvent.KEYCODE_VOLUME_UP:
-                case KeyEvent.KEYCODE_VOLUME_DOWN:
                     scrcpy.sendKeyevent(keyCode);
                     return true;
                 default:
@@ -448,6 +458,12 @@ public class ScreenMirrorActivity extends Activity
     private void adjustSurfaceLayout() {
         setupTouchAndNav();
 
+        View navBar = findViewById(R.id.nav_button_bar);
+        if (navBar != null) {
+            navBar.setVisibility(nav && !noControl ? View.VISIBLE : View.GONE);
+            navBar.bringToFront();
+        }
+
         if (!(containerLayout instanceof ConstraintLayout)) return;
         if (remoteDeviceWidth <= 0 || remoteDeviceHeight <= 0) return;
 
@@ -459,6 +475,10 @@ public class ScreenMirrorActivity extends Activity
         cs.clone(cl);
         cs.setDimensionRatio(R.id.decoder_surface, ratio);
         cs.applyTo(cl);
+
+        if (navBar != null) {
+            navBar.bringToFront();
+        }
     }
 
     private void registerProximity() {

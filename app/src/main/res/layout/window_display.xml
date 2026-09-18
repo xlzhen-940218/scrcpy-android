@@ -32,34 +32,37 @@
             android:layout_weight="1" />
 
         <!-- Quick rotate remote device -->
-        <TextView
+        <ImageView
             android:id="@+id/iv_rotate"
             android:layout_width="28dp"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/rotate_button"
-            android:textColor="#80CBC4"
-            android:textSize="15sp" />
+            android:padding="6dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/bg_btn_ripple"
+            android:src="@drawable/ic_nav_rotate"
+            android:contentDescription="@string/rotate_button" />
 
         <!-- Minimize / collapse video -->
-        <TextView
+        <ImageView
             android:id="@+id/iv_mini"
             android:layout_width="28dp"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="—"
-            android:textColor="#B0BEC5"
-            android:textSize="13sp" />
+            android:padding="6dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/bg_btn_ripple"
+            android:src="@drawable/ic_minimize"
+            android:contentDescription="Minimize" />
 
         <!-- Close floating window -->
-        <TextView
+        <ImageView
             android:id="@+id/iv_close"
             android:layout_width="28dp"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="✕"
-            android:textColor="#EF5350"
-            android:textSize="13sp" />
+            android:padding="6dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/bg_btn_ripple"
+            android:src="@drawable/ic_close_small"
+            android:contentDescription="Close" />
     </LinearLayout>
 
     <!-- Video & Surface Container -->
@@ -109,47 +112,82 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <TextView
+        <ImageView
+            android:id="@+id/action_power"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="7dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/bg_btn_ripple"
+            android:src="@drawable/ic_nav_power"
+            android:contentDescription="@string/power_button" />
+
+        <ImageView
             android:id="@+id/action_back"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/back_button"
-            android:textColor="#E0E0E0"
-            android:textSize="15sp" />
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/bg_btn_ripple"
+            android:src="@drawable/ic_nav_back"
+            android:contentDescription="@string/back_button" />
 
-        <TextView
+        <ImageView
             android:id="@+id/action_home"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/home_button"
-            android:textColor="#E0E0E0"
-            android:textSize="15sp" />
+            android:padding="7dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/bg_btn_ripple"
+            android:src="@drawable/ic_nav_home"
+            android:contentDescription="@string/home_button" />
 
-        <TextView
+        <ImageView
             android:id="@+id/action_menu"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/appswitch_button"
-            android:textColor="#E0E0E0"
-            android:textSize="15sp" />
+            android:padding="7dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/bg_btn_ripple"
+            android:src="@drawable/ic_nav_tasks"
+            android:contentDescription="@string/appswitch_button" />
+
+        <ImageView
+            android:id="@+id/action_vol_down"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="7dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/bg_btn_ripple"
+            android:src="@drawable/ic_nav_vol_down"
+            android:contentDescription="@string/voldown_button" />
+
+        <ImageView
+            android:id="@+id/action_vol_up"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="7dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/bg_btn_ripple"
+            android:src="@drawable/ic_nav_vol_up"
+            android:contentDescription="@string/volup_button" />
 
         <!-- Drag handle to resize window -->
-        <TextView
+        <ImageView
             android:id="@+id/iv_resize"
             android:layout_width="32dp"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:paddingEnd="4dp"
-            android:text="⤡"
-            android:textColor="#80CBC4"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/bg_btn_ripple"
+            android:src="@drawable/ic_nav_resize"
+            android:contentDescription="Resize" />
     </LinearLayout>
 
 </LinearLayout>

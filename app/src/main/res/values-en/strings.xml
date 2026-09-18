@@ -51,6 +51,9 @@
     <string name="home_button">○</string>
     <string name="appswitch_button">□</string>
     <string name="rotate_button">⟳</string>
+    <string name="power_button">⏻</string>
+    <string name="volup_button">＋</string>
+    <string name="voldown_button">－</string>
 
     <!-- Pairing dialog -->
     <string name="pair_dialog_title">Wireless Debug Pairing (Android 11+)</string>
@@ -181,5 +184,15 @@
     <string name="usb_unknown_device">Unknown Device</string>
     <string name="usb_device_format">USB Device (%1$d:%2$d)</string>
     <string name="usb_err_permission_denied">USB permission denied, cannot connect</string>
+
+    <!-- History & Theme -->
+    <string name="section_history">Connection History</string>
+    <string name="hint_no_history">No connection history yet</string>
+    <string name="btn_clear_history">Clear</string>
+    <string name="dialog_clear_history_title">Clear History</string>
+    <string name="dialog_clear_history_msg">Are you sure you want to clear all connection history?</string>
+    <string name="dialog_btn_clear">Clear</string>
+    <string name="msg_history_cleared">Connection history cleared</string>
+    <string name="menu_theme_toggle">Toggle Dark Mode</string>
 
 </resources>

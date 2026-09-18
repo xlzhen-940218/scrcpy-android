@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="36dp"
+    android:height="36dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <group
+        android:translateX="0"
+        android:translateY="1">
+        <!-- Monitor stand shadow -->
+        <path
+            android:fillColor="#000000"
+            android:fillAlpha="0.2"
+            android:pathData="M 16.846877,12 c -1.116351,0 -2.227419,0.912229 -2.015075,2 l 3.122973,16 -5.596557,11.109375 C 11.959876,41.871734 11.885244,42.336988 12.177176,43 c 0.278672,0.632897 0.998812,1 1.747448,1 H 24 34.075375 c 0.748637,0 1.468777,-0.367103 1.747448,-1 0.291932,-0.663012 0.217302,-1.128266 -0.181041,-1.890625 L 30.045225,30 33.168198,14 c 0.212344,-1.087771 -0.898724,-2 -2.015075,-2 H 24 Z" />
+        <!-- Monitor stand -->
+        <path
+            android:fillColor="#B0BEC5"
+            android:pathData="M 16.846877,11 c -1.116351,0 -2.227419,0.912229 -2.015075,2 l 3.122973,16 -5.596557,11.109375 C 11.959876,40.871734 11.885244,41.336988 12.177176,42 c 0.278672,0.632897 0.998812,1 1.747448,1 H 24 34.075375 c 0.748637,0 1.468777,-0.367103 1.747448,-1 0.291932,-0.663012 0.217302,-1.128266 -0.181041,-1.890625 L 30.045225,29 33.168198,13 c 0.212344,-1.087771 -0.898724,-2 -2.015075,-2 H 24 Z" />
+        <!-- Monitor body shadow -->
+        <path
+            android:fillColor="#000000"
+            android:fillAlpha="0.2"
+            android:pathData="M 6,6 H 42 A 2,2 0 0 1 44,8 V 36 A 2,2 0 0 1 42,38 H 6 A 2,2 0 0 1 4,36 V 8 A 2,2 0 0 1 6,6 Z" />
+        <!-- Monitor bottom bezel -->
+        <path
+            android:fillColor="#CFD8DC"
+            android:pathData="M 4,33 v 2 c 0,1.108 0.892,2 2,2 h 36 c 1.108,0 2,-0.892 2,-2 v -2 z" />
+        <!-- Monitor screen -->
+        <path
+            android:fillColor="#006874"
+            android:pathData="M 6,5 C 4.892,5 4,5.892 4,7 V 33 H 44 V 7 C 44,5.892 43.108,5 42,5 Z" />
+        <!-- Screen top reflection -->
+        <path
+            android:fillColor="#ffffff"
+            android:fillAlpha="0.15"
+            android:pathData="M 6,5 C 4.892,5 4,5.892 4,7 V 8 C 4,6.892 4.892,6 6,6 h 36 c 1.108,0 2,0.892 2,2 V 7 C 44,5.892 43.108,5 42,5 Z" />
+        <!-- Robot left antenna -->
+        <path
+            android:strokeColor="#30dd81"
+            android:strokeWidth="2.5"
+            android:strokeLineCap="round"
+            android:pathData="M 15.2,21 L 11.5,15.5" />
+        <!-- Robot right antenna -->
+        <path
+            android:strokeColor="#30dd81"
+            android:strokeWidth="2.5"
+            android:strokeLineCap="round"
+            android:pathData="M 32.8,21 L 36.5,15.5" />
+        <!-- Robot head -->
+        <path
+            android:fillColor="#30dd81"
+            android:pathData="m 24.002386,17.000034 c -8.355868,0 -15.2214979,6.346843 -15.9999669,14.460906 C 7.9289259,33.000882 9.5544999,33 9.5544999,33 H 38.406003 c 0,0 1.672201,-0.000335 1.591142,-1.617185 C 39.182807,23.305596 32.331836,17.000034 24.002386,17.000034 Z" />
+        <!-- Left eye -->
+        <path
+            android:fillColor="#ffffff"
+            android:pathData="M 15.999996,24.000008 A 1.9999959,1.9999959 0 0 1 17.999992,26.000004 1.9999959,1.9999959 0 0 1 15.999996,28 1.9999959,1.9999959 0 0 1 14,26.000004 1.9999959,1.9999959 0 0 1 15.999996,24.000008 Z" />
+        <!-- Right eye -->
+        <path
+            android:fillColor="#ffffff"
+            android:pathData="M 31.999996,24.000008 A 1.9999959,1.9999959 0 0 1 33.999991,26.000004 1.9999959,1.9999959 0 0 1 31.999996,28 1.9999959,1.9999959 0 0 1 30,26.000004 1.9999959,1.9999959 0 0 1 31.999996,24.000008 Z" />
+    </group>
+</vector>

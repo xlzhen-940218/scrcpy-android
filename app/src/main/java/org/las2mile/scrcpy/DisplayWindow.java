@@ -21,6 +21,9 @@ public class DisplayWindow extends FrameLayout {
     public static final int ACTION_HOME = 1;
     public static final int ACTION_MENU = 2;
     public static final int ACTION_ROTATE = 3;
+    public static final int ACTION_POWER = 4;
+    public static final int ACTION_VOLUME_UP = 5;
+    public static final int ACTION_VOLUME_DOWN = 6;
 
     private OnClickListener closeListener;
     private OnMoveCallback moveCallback;
@@ -153,6 +156,13 @@ public class DisplayWindow extends FrameLayout {
         }
 
         // Navigation buttons
+        View powerBtn = findViewById(R.id.action_power);
+        if (powerBtn != null) {
+            powerBtn.setOnClickListener(v -> {
+                if (actionCallback != null) actionCallback.onAction(ACTION_POWER);
+            });
+        }
+
         View backBtn = findViewById(R.id.action_back);
         if (backBtn != null) {
             backBtn.setOnClickListener(v -> {
@@ -171,6 +181,20 @@ public class DisplayWindow extends FrameLayout {
         if (menuBtn != null) {
             menuBtn.setOnClickListener(v -> {
                 if (actionCallback != null) actionCallback.onAction(ACTION_MENU);
+            });
+        }
+
+        View volDownBtn = findViewById(R.id.action_vol_down);
+        if (volDownBtn != null) {
+            volDownBtn.setOnClickListener(v -> {
+                if (actionCallback != null) actionCallback.onAction(ACTION_VOLUME_DOWN);
+            });
+        }
+
+        View volUpBtn = findViewById(R.id.action_vol_up);
+        if (volUpBtn != null) {
+            volUpBtn.setOnClickListener(v -> {
+                if (actionCallback != null) actionCallback.onAction(ACTION_VOLUME_UP);
             });
         }
 

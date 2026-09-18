@@ -16,27 +16,37 @@ import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
+import android.content.res.Configuration;
+import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import java.util.List;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.materialswitch.MaterialSwitch;
-import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.las2mile.scrcpy.adb.AdbPairingHelper;
+import org.las2mile.scrcpy.history.ConnectionHistoryManager;
 import org.las2mile.scrcpy.usb.UsbAdbManager;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private static final String PREF_KEY = "default";
@@ -61,9 +71,14 @@ public class MainActivity extends Activity {
     private View layoutWifiConnection;
     private View layoutUsbConnection;
     private TextView tvUsbStatus;
-    private TextView tvUsbHint;
     private MaterialButton btnUsbConnect;
-    private TextInputEditText etServerHost;
+    private MaterialAutoCompleteTextView etServerHost;
+    private MaterialButton btnThemeToggle;
+    private View cardHistory;
+    private MaterialButton btnClearHistory;
+    private LinearLayout layoutHistoryItems;
+    private TextView tvEmptyHistory;
+    private ConnectionHistoryManager historyManager;
 
     // UI references - Video & Audio & Advanced
     private AutoCompleteTextView acResolution;
@@ -92,8 +107,14 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        int savedNightMode = getSharedPreferences(PREF_KEY, MODE_PRIVATE)
+                .getInt("pref_night_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        AppCompatDelegate.setDefaultNightMode(savedNightMode);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        historyManager = ConnectionHistoryManager.getInstance(this);
 
         loadServerJar();
         sendCommands = new SendCommands();
@@ -104,6 +125,13 @@ public class MainActivity extends Activity {
         setupUsbListener();
         restorePreferences();
         setupListeners();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshHistoryCard();
+        refreshHostDropdown();
     }
 
     @Override
@@ -149,9 +177,13 @@ public class MainActivity extends Activity {
         layoutWifiConnection = findViewById(R.id.layout_wifi_connection);
         layoutUsbConnection  = findViewById(R.id.layout_usb_connection);
         tvUsbStatus          = findViewById(R.id.tv_usb_status);
-        tvUsbHint            = findViewById(R.id.tv_usb_hint);
         btnUsbConnect        = findViewById(R.id.button_usb_connect);
         etServerHost         = findViewById(R.id.editText_server_host);
+        btnThemeToggle       = findViewById(R.id.btn_theme_toggle);
+        cardHistory          = findViewById(R.id.card_history);
+        btnClearHistory      = findViewById(R.id.btn_clear_history);
+        layoutHistoryItems   = findViewById(R.id.layout_history_items);
+        tvEmptyHistory       = findViewById(R.id.tv_empty_history);
 
         acResolution         = findViewById(R.id.spinner_video_resolution);
         acBitrate            = findViewById(R.id.spinner_video_bitrate);
@@ -197,7 +229,10 @@ public class MainActivity extends Activity {
         switchScreenOff.setChecked(p.getBoolean(PREF_SCREEN_OFF, false));
         switchSyncRotation.setChecked(p.getBoolean(PREF_SYNC_ROTATION, true)); // Default TRUE as requested
         switch0.setChecked(p.getBoolean(PREF_NO_CONTROL, false));
-        switch1.setChecked(p.getBoolean(PREF_NAV, false));
+        if (!p.contains("pref_nav_v4_migrated")) {
+            p.edit().putBoolean(PREF_NAV, true).putBoolean("pref_nav_v4_migrated", true).apply();
+        }
+        switch1.setChecked(p.getBoolean(PREF_NAV, true));
 
         // Sync audio codec visibility
         if (tilAudioCodec != null) {
@@ -273,6 +308,10 @@ public class MainActivity extends Activity {
         // Float start
         View floatBtn = findViewById(R.id.button_start_float);
         if (floatBtn != null) floatBtn.setOnClickListener(v -> onStartFloat());
+
+        setupThemeToggle();
+        setupHostDropdown();
+        setupHistoryCard();
     }
 
     private void setupUsbListener() {
@@ -436,6 +475,16 @@ public class MainActivity extends Activity {
                     btnStart.setEnabled(!isUsbMode || usbManager.isConnected());
                 }
                 if (res == 0) {
+                    if (isUsbMode) {
+                        UsbDevice dev = usbManager.getConnectedDevice();
+                        String name = (dev != null) ? usbManager.getDeviceDisplayName(dev) : "USB Device";
+                        historyManager.addHistory("USB", "usb", name);
+                    } else {
+                        historyManager.addHistory(fAddr, "wifi", fAddr);
+                    }
+                    refreshHistoryCard();
+                    refreshHostDropdown();
+
                     // Launch dedicated mirror activity
                     Intent i = new Intent(this, ScreenMirrorActivity.class);
                     i.putExtra(ScreenMirrorActivity.EXTRA_SERVER_ADR,    isUsbMode ? "127.0.0.1" : fAddr);
@@ -513,6 +562,16 @@ public class MainActivity extends Activity {
                     fBitrate, fMaxSize, fMaxFps, fVideoCodec, fAudio, fAudioCodec, fControl, fStayAwake);
             runOnUiThread(() -> {
                 if (res == 0) {
+                    if (isUsbMode) {
+                        UsbDevice dev = usbManager.getConnectedDevice();
+                        String name = (dev != null) ? usbManager.getDeviceDisplayName(dev) : "USB Device";
+                        historyManager.addHistory("USB", "usb", name);
+                    } else {
+                        historyManager.addHistory(fAddr, "wifi", fAddr);
+                    }
+                    refreshHistoryCard();
+                    refreshHostDropdown();
+
                     Intent serviceIntent = new Intent(this, FloatService.class);
                     serviceIntent.putExtra("ip", isUsbMode ? "127.0.0.1" : fAddr);
                     serviceIntent.putExtra("port", 7007);
@@ -705,5 +764,187 @@ public class MainActivity extends Activity {
 
     private SharedPreferences prefs() {
         return getSharedPreferences(PREF_KEY, MODE_PRIVATE);
+    }
+
+    private void setupThemeToggle() {
+        if (btnThemeToggle == null) return;
+        int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        boolean isNight = (currentNightMode == Configuration.UI_MODE_NIGHT_YES);
+        btnThemeToggle.setIconResource(isNight ? R.drawable.ic_theme_toggle_day : R.drawable.ic_theme_toggle);
+
+        btnThemeToggle.setOnClickListener(v -> {
+            int currentMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            int newMode = (currentMode == Configuration.UI_MODE_NIGHT_YES)
+                    ? AppCompatDelegate.MODE_NIGHT_NO
+                    : AppCompatDelegate.MODE_NIGHT_YES;
+            prefs().edit().putInt("pref_night_mode", newMode).apply();
+            AppCompatDelegate.setDefaultNightMode(newMode);
+            recreate();
+        });
+    }
+
+    private void refreshHostDropdown() {
+        if (etServerHost == null || historyManager == null) return;
+        List<String> recents = historyManager.getRecentAddresses(5);
+        if (recents == null || recents.isEmpty()) {
+            etServerHost.setAdapter(null);
+            return;
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, recents) {
+            @Override
+            public android.widget.Filter getFilter() {
+                return new android.widget.Filter() {
+                    @Override
+                    protected FilterResults performFiltering(CharSequence constraint) {
+                        FilterResults results = new FilterResults();
+                        results.values = recents;
+                        results.count = recents.size();
+                        return results;
+                    }
+
+                    @Override
+                    protected void publishResults(CharSequence constraint, FilterResults results) {
+                        notifyDataSetChanged();
+                    }
+                };
+            }
+        };
+        etServerHost.setAdapter(adapter);
+    }
+
+    private void setupHostDropdown() {
+        if (etServerHost == null) return;
+        etServerHost.setThreshold(0);
+        refreshHostDropdown();
+
+        etServerHost.setOnClickListener(v -> {
+            refreshHostDropdown();
+            if (etServerHost.getAdapter() != null && etServerHost.getAdapter().getCount() > 0) {
+                etServerHost.showDropDown();
+            }
+        });
+
+        etServerHost.setOnTouchListener((v, event) -> {
+            if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
+                refreshHostDropdown();
+                if (etServerHost.getAdapter() != null && etServerHost.getAdapter().getCount() > 0) {
+                    etServerHost.post(() -> {
+                        if (etServerHost.getWindowToken() != null) {
+                            etServerHost.showDropDown();
+                        }
+                    });
+                }
+            }
+            return false;
+        });
+
+        etServerHost.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                refreshHostDropdown();
+                if (etServerHost.getAdapter() != null && etServerHost.getAdapter().getCount() > 0) {
+                    etServerHost.post(() -> {
+                        if (etServerHost.getWindowToken() != null) {
+                            etServerHost.showDropDown();
+                        }
+                    });
+                }
+            }
+        });
+
+        etServerHost.setOnItemClickListener((parent, view, position, id) -> {
+            String selected = (String) parent.getItemAtPosition(position);
+            if (selected != null) {
+                etServerHost.setText(selected, false);
+                etServerHost.setSelection(selected.length());
+                prefs().edit().putString(PREF_SERVER_ADDRESS, selected).apply();
+            }
+        });
+    }
+
+    private void setupHistoryCard() {
+        if (btnClearHistory != null) {
+            btnClearHistory.setOnClickListener(v -> new AlertDialog.Builder(this)
+                    .setTitle(R.string.dialog_clear_history_title)
+                    .setMessage(R.string.dialog_clear_history_msg)
+                    .setPositiveButton(R.string.dialog_btn_clear, (dialog, which) -> {
+                        if (historyManager != null) {
+                            historyManager.clearHistory();
+                            refreshHistoryCard();
+                            refreshHostDropdown();
+                            Toast.makeText(this, R.string.msg_history_cleared, Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .setNegativeButton(R.string.pair_dialog_btn_cancel, null)
+                    .show());
+        }
+        refreshHistoryCard();
+    }
+
+    private void refreshHistoryCard() {
+        if (layoutHistoryItems == null || historyManager == null) return;
+        List<ConnectionHistoryManager.HistoryItem> list = historyManager.getHistoryList();
+        if (list == null || list.isEmpty()) {
+            if (tvEmptyHistory != null) tvEmptyHistory.setVisibility(View.VISIBLE);
+            if (btnClearHistory != null) btnClearHistory.setVisibility(View.GONE);
+            layoutHistoryItems.removeAllViews();
+            return;
+        }
+
+        if (tvEmptyHistory != null) tvEmptyHistory.setVisibility(View.GONE);
+        if (btnClearHistory != null) btnClearHistory.setVisibility(View.VISIBLE);
+        layoutHistoryItems.removeAllViews();
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        int maxItems = Math.min(list.size(), 5);
+        for (int i = 0; i < maxItems; i++) {
+            ConnectionHistoryManager.HistoryItem item = list.get(i);
+            View row = inflater.inflate(R.layout.item_connection_history, layoutHistoryItems, false);
+            ImageView ivType = row.findViewById(R.id.iv_history_type);
+            TextView tvAddress = row.findViewById(R.id.tv_history_address);
+            TextView tvTime = row.findViewById(R.id.tv_history_time);
+            View btnDelete = row.findViewById(R.id.btn_delete_history_item);
+
+            boolean isWifi = "wifi".equalsIgnoreCase(item.type);
+            if (ivType != null) {
+                ivType.setImageResource(isWifi ? R.drawable.ic_wifi_network : R.drawable.ic_usb_cable);
+            }
+            if (tvAddress != null) {
+                tvAddress.setText(!TextUtils.isEmpty(item.displayName) ? item.displayName : item.address);
+            }
+            if (tvTime != null) {
+                if (item.timestamp > 0) {
+                    CharSequence rel = DateUtils.getRelativeTimeSpanString(item.timestamp, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS);
+                    tvTime.setText(rel);
+                } else {
+                    tvTime.setText("");
+                }
+            }
+
+            row.setOnClickListener(v -> {
+                if (isWifi) {
+                    if (toggleGroupMode != null) toggleGroupMode.check(R.id.btn_mode_wifi);
+                    setConnectionMode(false);
+                    if (etServerHost != null) {
+                        etServerHost.setText(item.address);
+                        etServerHost.setSelection(item.address.length());
+                        prefs().edit().putString(PREF_SERVER_ADDRESS, item.address).apply();
+                        etServerHost.requestFocus();
+                    }
+                } else {
+                    if (toggleGroupMode != null) toggleGroupMode.check(R.id.btn_mode_usb);
+                    setConnectionMode(true);
+                }
+            });
+
+            if (btnDelete != null) {
+                btnDelete.setOnClickListener(v -> {
+                    historyManager.deleteHistory(item.address);
+                    refreshHistoryCard();
+                    refreshHostDropdown();
+                });
+            }
+
+            layoutHistoryItems.addView(row);
+        }
     }
 }
