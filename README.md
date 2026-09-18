@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="docs/images/readme_main.jpg" width="270" alt="scrcpy-android 主界面" style="border-radius: 16px; margin: 6px;" />
-  <img src="docs/images/readme_fullscreen.jpg" width="450" alt="scrcpy-android 全屏投屏" style="border-radius: 16px; margin: 6px;" />
+  <img src="docs/images/readme_fullscreen.jpg" width="270" alt="scrcpy-android 全屏投屏" style="border-radius: 16px; margin: 6px;" />
   <img src="docs/images/readme_floating.jpg" width="270" alt="scrcpy-android 悬浮窗投屏" style="border-radius: 16px; margin: 6px;" />
 </p>
 
