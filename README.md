@@ -36,6 +36,14 @@
 
 ---
 
+### 🔮 更新预告
+
+下一个版本将新增以下功能：
+- 📸 **屏幕截图**：投屏过程中支持一键捕获受控端画面并保存至本地。
+- 🎥 **屏幕录制**：支持投屏画面与音频的同步录制与导出。
+  
+---
+
 ### 📥 下载安装
 
 无需自行配置环境编译，直接前往本项目 GitHub Releases 页面下载预编译好的 APK 安装包即可：
@@ -159,6 +167,14 @@ app/build/outputs/apk/debug/app-debug.apk
 
 Built on top of the official [Genymobile/scrcpy v4.1](https://github.com/Genymobile/scrcpy) protocol and server backend, it provides hardware-accelerated video decoding (H.264 / H.265 / AV1), real-time audio playback (OPUS / AAC / PCM), USB OTG bulk transfer, Android 11+ wireless TLS pairing, dynamic orientation synchronization, and a modern Material Design 3 interface.
 
+---
+
+### 🔮 Upcoming Features
+
+The upcoming version will introduce:
+- 📸 **Screen Capture**: One-tap capture of remote screen display saved directly to local storage.
+- 🎥 **Screen Recording**: Real-time synchronized screen and audio recording and exporting.
+  
 ---
 
 ### 📥 Download & Installation
